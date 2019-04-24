@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<% include ../partials/_head.ejs %>
+
+<body>
+
+<div class="container-fluid">
+    <% include ../partials/_navbar.ejs %>
+
+    <div class="row justify-content-sm-center">
+        <div class="col-sm-6">
+            <div class="center-text">  
+                <h1 class="display-4">Search Results</h1>
+                    <%# <div class="jumbotron jumbotron-fluid"> %>
+                    <p class="lead">This is the search page showing all the dreams matching your search!</p>
+                    <%# </div> %> 
+                    <p> These are the matching dreams for your search criteria:
+                        <%# <ul> %>
+                            <%# <% for(let i = 0; i < dreams.length; i++){ %> %>
+                                <%# <li><a href="/dreams/<%=dreams[i]._id%>"><%=dreams[i].title%></a></li> %>
+                            <%# <% } %> %>
+                        <%# </ul> %>
+                            <form action="/#" method="GET">
+                            <button class="btn btn-primary btn-lg" type="submit">Return Home</button>
+                            </form>                
+            </div>
+        </div>
+    </div>
+</div>
+
+    <% include ../partials/_bootstrap-links.ejs %>
+</body>
+</html>

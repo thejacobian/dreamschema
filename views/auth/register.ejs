@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<% include ../../partials/_head.ejs %>
+
+<body>
+
+<div class="container-fluid">
+    <% include ../../partials/_navbar.ejs %>
+
+    <div class="row justify-content-sm-center">
+        <div class="col-sm-6">
+            <div class="center-text">  
+                <h1>Register</h1>
+                    <form action="/auth/register" method="POST">
+                        <div>username: <input type="text" name="username"></div>
+                        <div>password: <input type="text" name="password"></div>
+                        <input type="submit">
+                    </form>
+                    <div><a href="/auth/login">Already have an account? Sign in.</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <% include ../../partials/_bootstrap-links.ejs %>
+</body>
+</html>
