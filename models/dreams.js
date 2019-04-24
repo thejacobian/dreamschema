@@ -9,6 +9,7 @@ const dreamSchema = mongoose.Schema({
     //}]This will be added once we have this whole thing figured out
 });
 
+dreamSchema.index({ title: 'text', body: 'text' });
 const Dream = mongoose.model('Dream', dreamSchema);
 
 module.exports = Dream;
