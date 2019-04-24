@@ -23,9 +23,9 @@ app.use(morgan('short'));
 require('./db/db');
 
 
-app.get('/', (req, res)=>{
-    res.render("auth/login.ejs");
-})
+// app.get('/', (req, res)=>{
+//     res.render("auth/login.ejs");
+// });
 
 app.use('/users', userController);
 app.use('/dreams', dreamController);
