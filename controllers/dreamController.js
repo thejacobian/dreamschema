@@ -8,11 +8,11 @@ const Dream = require('../models/dreams');
 router.get('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        console.log(thisUsersDbId, '<---- thisUserId');
+        // console.log(thisUsersDbId, '<---- thisUserId');
         const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
-        console.log(myDbUser, '<---- myDbUsers');
+        // console.log(myDbUser, '<---- myDbUsers');
         const allDreams = await Dream.find();
-        console.log(allDreams, '<----- allDreams'),
+        // console.log(allDreams, '<----- allDreams'),
         res.render('dreams/index.ejs', {
             dreams: allDreams
         });
@@ -31,15 +31,15 @@ router.get('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
-        console.log(myDbUser, '<---- myDbUsers');
-        // const oneDream = await Dream.findById(req.params.id);
-        if (myDbUser.dreams.includes(oneDream._id)) {
-            res.render('dreams/show.ejs', {
-                dream: myDbUser.dreams[req.params.id]
-            });
-        } else {
-            req.session.message('You dont have access to this dream');
-        }
+        myDbUser.dreams.forEach((myDream) => {
+            if (myDream._id.toString() === req.params.id) {
+                res.render('dreams/show.ejs', {
+                    dream: myDream
+                });
+            } else {
+                req.session.message('You dont have access to this dream');
+            }
+        })
     }catch(err){
         res.send(err)
     }
