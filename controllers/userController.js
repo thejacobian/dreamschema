@@ -51,5 +51,19 @@ router.get('/:id', async (req, res) => {
  });
 
  // delete route
+ router.delete('/:id', async (req, res) => {
+    try {
+        const deletedUser = await User.findByIdAndRemove(req.params.id);
+        console.log(deletedUser);
+        await Dream.deleteMany({
+            _id: {
+                $in: deletedUser.dreams
+            }
+        })
+        res.redirect('/users');
+    } catch (err) {
+        res.send(err);
+    }
+ });
 
 module.exports = router;
