@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
-// const User = require('../models/users');
+const User = require('../models/users');
 const Dream = require('../models/dreams');
 
 
 // INDEX ROUTE
 router.get('/', async (req, res) => {
     try {
-        const thisUserId = req.session.userId;
-        console.log(thisUserId, '<---- thisUserId');
-        const myDbUser = await User.findById(thisUserId).populate('dreams').exec();
-        console.log(myDbUser, '<---- myDbUser');
+        const thisUsersDbId = req.session.usersDbId;
+        console.log(thisUsersDbId, '<---- thisUserId');
+        const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
+        console.log(myDbUser, '<---- myDbUsers');
         const allDreams = await Dream.find();
         console.log(allDreams, '<----- allDreams'),
         res.render('dreams/index.ejs', {
@@ -29,25 +29,37 @@ router.get('/new', (req, res) => {
 // SHOW ROUTE
 router.get('/:id', async (req, res) => {
     try {
-        const oneDream = await Dream.findById(req.params.id);
-        res.render('dreams/show.ejs', {
-            dream: oneDream
-        })
+        const thisUsersDbId = req.session.usersDbId;
+        const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
+        console.log(myDbUser, '<---- myDbUsers');
+        // const oneDream = await Dream.findById(req.params.id);
+        if (myDbUser.dreams.includes(oneDream._id)) {
+            res.render('dreams/show.ejs', {
+                dream: myDbUser.dreams[req.params.id]
+            });
+        } else {
+            req.session.message('You dont have access to this dream');
+        }
     }catch(err){
         res.send(err)
     }
 });
 
 // CREATE ROUTE
-router.post('/', (req, res) => {
-    Dream.create(req.body, (err, newDream) => {
-        if(err){
-            res.send(err)
-        }else{
-            console.log(newDream);
-            res.redirect('/dreams')
-        }
-    }); 
+router.post('/', async (req, res) => {
+    try {
+        const thisUsersDbId = req.session.usersDbId;
+        const newDream = await Dream.create(req.body);
+        console.log(newDream, 'newDream');
+        const newDreamsUser = await User.findById(thisUsersDbId);
+        console.log(newDreamsUser, 'newDreamsUser');
+        newDreamsUser.dreams.push(newDream._id);
+        newDreamsUser.save();
+        console.log(newDreamsUser, 'newDreamsUser after pushing to dreams array');
+        res.redirect('/dreams')
+    } catch (err){
+        res.send(err);
+    }
 });
 
 // EDIT ROUTE
