@@ -11,7 +11,7 @@
         <div class="col-sm-6">
             <div class="center-text">  
                 <h1><%= user.username %> Edit Page</h1>
-                <form action="" method="">
+                <form action="/users/<%= user._id %>?_method=PUT" method="post">
                     <input type="text" name="username" value="<%= user.username %>">
                     <input type="text" name="password" placeholder="new password">
                     <input type="submit" value="Update Info">
