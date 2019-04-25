@@ -14,6 +14,22 @@ router.get('/', async (req, res) => {
         res.send(err);
     }
 });
+ // show route
+router.get('/:id', async (req, res) => {
+    try {
+        const foundUser = await User.findById(req.params.id)
+        .populate('dreams');
+        console.log(foundUser);
+        res.render('users/show.ejs', {
+            user: foundUser
+        });
+    } catch (err) {
+        res.send(err);
+    }
+});
 
+ // edit route
+ // update route
+ // delete route
 
 module.exports = router;
