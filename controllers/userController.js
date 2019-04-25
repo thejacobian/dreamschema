@@ -40,6 +40,16 @@ router.get('/:id', async (req, res) => {
 });
 
  // update route
+ router.put('/:id', async (req, res) => {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        console.log(updatedUser) 
+        res.redirect('/users/' + req.params.id)   
+    } catch (err) {
+        res.send(err);
+    }
+ });
+
  // delete route
 
 module.exports = router;
