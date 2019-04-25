@@ -19,7 +19,6 @@ router.get('/:id', async (req, res) => {
     try {
         const foundUser = await User.findById(req.params.id)
         .populate('dreams');
-        console.log(foundUser);
         res.render('users/show.ejs', {
             user: foundUser
         });
@@ -29,6 +28,17 @@ router.get('/:id', async (req, res) => {
 });
 
  // edit route
+ router.get('/:id/edit', async (req, res) => {
+    try {
+       const foundUser = await User.findById(req.params.id);
+        res.render('users/edit.ejs', {
+            user: foundUser
+        });
+    } catch (err) {
+        res.send(err);
+    }
+});
+
  // update route
  // delete route
 
