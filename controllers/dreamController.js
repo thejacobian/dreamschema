@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require('../models/users');
 const Dream = require('../models/dreams');
 
+// add require login middleware
+
 
 // INDEX ROUTE
 router.get('/', async (req, res) => {
@@ -48,26 +50,32 @@ router.post('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const newDream = await Dream.create(req.body);
-        console.log(newDream, 'newDream');
         const newDreamsUser = await User.findById(thisUsersDbId);
-        console.log(newDreamsUser, 'newDreamsUser');
         newDreamsUser.dreams.push(newDream._id);
         newDreamsUser.save();
-        console.log(newDreamsUser, 'newDreamsUser after pushing to dreams array');
-        res.redirect('/dreams')
+        res.redirect('/dreams');
     } catch (err){
         res.send(err);
     }
 });
 
 // EDIT ROUTE
+// if trying to go to someone else's edit dream page, it gives empty object instead of res.session.message
 router.get('/:id/edit', async (req, res) => {
     try {
-        const editDream = await Dream.findById(req.params.id);
-        res.render('dreams/edit.ejs', {
-            dream: editDream
+        const thisUsersDbId = req.session.usersDbId;
+        const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
+        myDbUser.dreams.forEach((myDream) => {
+            if (myDream._id.toString() === req.params.id) {
+                res.render('dreams/edit.ejs', {
+                    dream: myDream
+                });
+            } else {
+                req.session.message('You dont have access to this dream');
+                console.log(req.session.message);
+            }
         })
-    } catch(err){
+    }catch(err){
         res.send(err)
     }
 });
@@ -85,9 +93,20 @@ router.put('/:id', async (req, res) => {
 // DELETE ROUTE
 router.delete('/:id', async (req, res) => {
     try {
+        const thisUsersDbId = req.session.usersDbId;
+
         const deletedDream = await Dream.findByIdAndDelete(req.params.id);
-        res.redirect('/dreams');
-    } catch(err) {
+        const foundUser = await User.findOne({'dreams': req.params.id});
+            if (thisUsersDbId.toString() === foundUser._id.toString()) {
+                foundUser.dreams.remove(req.params.id);
+                foundUser.save();
+                console.log(foundUser);
+                res.redirect('/dreams');
+            } else {
+                req.session.message('You dont have access to this dream');
+                console.log(req.session.message);
+            }
+        } catch(err) {
         res.send(err)
     }
 });
