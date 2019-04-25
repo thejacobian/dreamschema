@@ -12,7 +12,9 @@
             <div class="center-text">  
                 <h1><%= user.username %> Show Page</h1>
                 <a href="/users/<%= user._id %>/edit"><button>Edit Profile</button></a>
-                <button>Delete</button>
+                <form action="/users/<%= user._id%>?_method=DELETE" method="post">
+                    <button type="submit">Delete</button>
+                </form>
                 <ul>
                 <% for (let i = 0; i < user.dreams.length; i++ ) {%>
                     <li><%= user.dreams.title[i] %></li>
