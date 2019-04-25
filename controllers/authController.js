@@ -36,7 +36,7 @@ router.post('/login', async (req, res) => {
         req.session.message = '';
         req.session.logged = true;
         req.session.username = req.body.username;
-        // req.session.usersDbId = foundUser._id;
+        req.session.usersDbId = foundUser._id;
         console.log(req.session, 'successful login');
         res.redirect('/users');
       } else {
