@@ -3,10 +3,11 @@ const mongoose = require('mongoose');
 const dreamSchema = mongoose.Schema({
     title: String,
     body: String,
-    // keywords: [{
-        // type: mongoose.Schema.Types.ObjectId,
-        // ref: 'Keyword'
-    //}]This will be added once we have this whole thing figured out
+    date: Date,
+    keywords: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Keyword'
+    }]
 });
 
 dreamSchema.index({ title: 'text', body: 'text' });
