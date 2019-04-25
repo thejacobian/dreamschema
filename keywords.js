@@ -1,4 +1,3 @@
-
 const keywords = [{
     word: "mountain",
     meaning: "Dreaming of a mountain symbolizes working hard, overcoming obstacles, and rising above petty, everyday quarrels. It takes great effort to climb a mountain and you may encounter many obstacles in your path. When you make it to the top there is a great sense of achievement at the new skills learned in getting there. This is true in your real life as well when you face tough challenges. There may be some tough obstacles to overcome very soon. Know you have the resources to overcome anything you need to. Even if you have to change direction to try a new way."
