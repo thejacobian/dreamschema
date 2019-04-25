@@ -8,13 +8,11 @@ const Dream = require('../models/dreams');
 router.get('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        // console.log(thisUsersDbId, '<---- thisUserId');
-        const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
-        // console.log(myDbUser, '<---- myDbUsers');
-        const allDreams = await Dream.find();
-        // console.log(allDreams, '<----- allDreams'),
+        const myDbUser = await User.findById(thisUsersDbId)
+        .populate('dreams');
+        
         res.render('dreams/index.ejs', {
-            dreams: allDreams
+            dreams: myDbUser.dreams
         });
     }catch(err){
         res.send(err)
