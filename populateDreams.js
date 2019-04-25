@@ -17,7 +17,7 @@ module.exports = [
   }, {
     title: "Bad Dream - gack_baddream",
     date: "2010-07-07",
-    body: "Cant remember details, but there are MANY dreams which I dont recall upon waking, but something happens in my day to trigger my random dream. In one particular dream, I was with a friend of mine who is pierecer: she and I were having drinks together. I had too many and in the span of one night she tattooed me, with full arm and leg sleave, a chest and back piece. Horrible awful tattoos that had movie themes. The chest piece was the "donnie darko" bunny. Arm was action heros.",
+    body: "Cant remember details, but there are MANY dreams which I dont recall upon waking, but something happens in my day to trigger my random dream. In one particular dream, I was with a friend of mine who is pierecer: she and I were having drinks together. I had too many and in the span of one night she tattooed me, with full arm and leg sleave, a chest and back piece. Horrible awful tattoos that had movie themes. The chest piece was the 'donnie darko' bunny. Arm was action heros.",
     keywords: ["tattoo", "bunny", "hero"],
   },
 ]
