@@ -10,6 +10,7 @@ const morgan = require('morgan');
 const requireLogin = require('./middleware/requireLogin');
 const showMessagesAndUsername = require('./middleware/showSessionMessages');
 const Dream = require('./models/dreams');
+const Keyword = require('./models/keywords');
 
 app.use(session({
     secret: "sdflawiefuawi3ur487gbisub3w434",
@@ -23,6 +24,22 @@ app.use(morgan('short'));
 // app.use(showMessagesAndUsername);
 require('./db/db');
 
+const keywordsData = require('./keywords');
+
+// INSERT USING MONGOOSE
+// ### Add the keyword test data
+keywordsData.forEach((keyword) => {
+    Keyword.create({
+      word: keyword.word,
+      meaning: keyword.meaning,
+      }, (err, createdKeyword) => {
+         if (err) {
+           console.log(err);
+         } else {
+           console.log(createdKeyword);
+         }
+    });
+});
 
 // app.get('/', (req, res)=>{
 //     res.render("auth/login.ejs");
