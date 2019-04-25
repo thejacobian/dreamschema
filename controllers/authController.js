@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/users');
 const bcrypt = require('bcryptjs');
 
-router.get('/register', async (req, res) => {
+router.get('/register', (req, res) => {
     res.render('auth/register.ejs');
 });
 
@@ -22,5 +22,36 @@ router.post('/register', async (req, res) => {
       res.send(err)
     }
   });
+
+router.get('/login', (req, res) => {
+  res.render('auth/login.ejs')
+});
+
+router.post('/login', async (req, res) => {
+  try {
+    const foundUser = await User.findOne({username: req.body.username});
+    if (foundUser){
+      if(bcrypt.compareSync(req.body.password, foundUser.password) === true){
+        console.log(req.body.password);
+        req.session.message = '';
+        req.session.logged = true;
+        req.session.username = req.body.username;
+        // req.session.usersDbId = foundUser._id;
+        console.log(req.session, 'successful login');
+        res.redirect('/users');
+      } else {
+        req.session.message = 'password incorrect'; //change this for implementation
+        console.log(req.session.message);
+        res.redirect('/auth/login');
+      } 
+    } else {
+      req.session.message = 'username is incorrect';
+      console.log(req.session.message);
+      res.redirect('/auth/login');
+    }
+  } catch (err) {
+    res.send(err);
+  }
+});
 
 module.exports = router;

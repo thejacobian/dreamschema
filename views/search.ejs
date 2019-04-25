@@ -15,11 +15,11 @@
                     <p class="lead">This is the search page showing all the dreams matching your search!</p>
                     <%# </div> %> 
                     <p> These are the matching dreams for your search criteria:
-                        <%# <ul> %>
-                            <%# <% for(let i = 0; i < dreams.length; i++){ %> %>
-                                <%# <li><a href="/dreams/<%=dreams[i]._id%>"><%=dreams[i].title%></a></li> %>
-                            <%# <% } %> %>
-                        <%# </ul> %>
+                        <ul>
+                            <% for(let i = 0; i < dreams.length; i++){ %>
+                                 <li><a href="/dreams/<%=dreams[i]._id%>"><%=dreams[i].title%></a></li>
+                             <% } %>
+                         </ul>
                             <form action="/#" method="GET">
                             <button class="btn btn-primary btn-lg" type="submit">Return Home</button>
                             </form>                

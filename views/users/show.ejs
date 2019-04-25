@@ -10,8 +10,15 @@
     <div class="row justify-content-sm-center">
         <div class="col-sm-6">
             <div class="center-text">  
-                <h1>User Show Page</h1>
-
+                <h1><%= user.username %> Show Page</h1>
+                <button>Edit</button>
+                <button>Delete</button>
+                <ul>
+                <% for (let i = 0; i < user.dreams.length; i++ ) {%>
+                    <li><%= user.dreams.title[i] %></li>
+                    <li><%= keywords %></li>
+                <% } %>
+                </ul>
             </div>
         </div>
     </div>
