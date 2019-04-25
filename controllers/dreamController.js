@@ -7,7 +7,12 @@ const Dream = require('../models/dreams');
 // INDEX ROUTE
 router.get('/', async (req, res) => {
     try {
+        const thisUserId = req.session.userId;
+        console.log(thisUserId, '<---- thisUserId');
+        const myDbUser = await User.findById(thisUserId).populate('dreams').exec();
+        console.log(myDbUser, '<---- myDbUser');
         const allDreams = await Dream.find();
+        console.log(allDreams, '<----- allDreams'),
         res.render('dreams/index.ejs', {
             dreams: allDreams
         });
@@ -76,7 +81,5 @@ router.delete('/:id', async (req, res) => {
         res.send(err)
     }
 });
-
-
 
 module.exports = router;
