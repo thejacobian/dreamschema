@@ -7,6 +7,6 @@ const keywordSchema = new mongoose.Schema({
 
 // keywordSchema.index({ word: 'text', meaning: 'text' });
 
-const Keyword = mongoose.model('', keywordSchema);
+const Keyword = mongoose.model('keyword', keywordSchema);
 
 module.exports = Keyword;
