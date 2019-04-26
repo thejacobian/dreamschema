@@ -6,9 +6,11 @@ const Dream = require('../models/dreams');
 // index route
 router.get('/', async (req, res) => {
     try {
+        const thisUsersDbId = req.session.usersDbId;
         const users = await User.find ({});
         res.render('users/index.ejs', {
             users: users,
+            currentUser : thisUsersDbId
         });
     } catch (err) {
         res.send(err);
@@ -17,10 +19,12 @@ router.get('/', async (req, res) => {
  // show route
 router.get('/:id', async (req, res) => {
     try {
+        const thisUsersDbId = req.session.usersDbId;
         const foundUser = await User.findById(req.params.id)
         .populate('dreams');
         res.render('users/show.ejs', {
-            user: foundUser
+            user: foundUser,
+            currentUser : thisUsersDbId
         });
     } catch (err) {
         res.send(err);
@@ -30,9 +34,11 @@ router.get('/:id', async (req, res) => {
  // edit route
  router.get('/:id/edit', async (req, res) => {
     try {
-       const foundUser = await User.findById(req.params.id);
+        const thisUsersDbId = req.session.usersDbId;
+        const foundUser = await User.findById(req.params.id);
         res.render('users/edit.ejs', {
-            user: foundUser
+            user: foundUser,
+            currentUser : thisUsersDbId
         });
     } catch (err) {
         res.send(err);
