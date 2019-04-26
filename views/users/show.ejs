@@ -17,8 +17,8 @@
                 </form>
                 <ul>
                 <% for (let i = 0; i < user.dreams.length; i++ ) {%>
-                    <li><%= user.dreams.title[i] %></li>
-                    <li><%= keywords %></li>
+                    <li><%= user.dreams[i].title %></li>
+                    <li><%= user.dreams[i].keywords %></li>
                 <% } %>
                 </ul>
             </div>
