@@ -15,7 +15,8 @@ router.get('/', async (req, res) => {
         .populate('dreams');
         
         res.render('dreams/index.ejs', {
-            dreams: myDbUser.dreams
+            dreams: myDbUser.dreams,
+            currentUser : thisUsersDbId
         });
     }catch(err){
         res.send(err)
@@ -25,9 +26,11 @@ router.get('/', async (req, res) => {
 // NEW ROUTE
 router.get('/new', async (req, res) => {
     try{
+        const thisUsersDbId = req.session.usersDbId;
         const keywords = await Keyword.find();
     res.render('dreams/new.ejs', {
-        keywords: keywords
+        keywords: keywords,
+        currentUser : thisUsersDbId
     })}catch(err){
         res.send(err)
     }
@@ -54,7 +57,8 @@ router.get('/:id', async (req, res) => {
                 //     console.log(myDreamKeywords, 'inside for loop');
                 // };
                 res.render('dreams/show.ejs', {
-                    dream: myDream
+                    dream: myDream,
+                    currentUser : thisUsersDbId
                 });
             } else {
                 req.session.message('You dont have access to this dream');
@@ -94,7 +98,8 @@ router.get('/:id/edit', async (req, res) => {
         myDbUser.dreams.forEach((myDream) => {
             if (myDream._id.toString() === req.params.id) {
                 res.render('dreams/edit.ejs', {
-                    dream: myDream
+                    dream: myDream,
+                    currentUser : thisUsersDbId
                 });
             } else {
                 req.session.message('You dont have access to this dream');
