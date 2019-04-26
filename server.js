@@ -49,6 +49,7 @@ require('./db/db');
 // SEARCH ROUTE
 app.get('/search', async (req, res) => {
     try {
+        const thisUsersDbId = req.session.usersDbId;
         const matchingDreams = await Dream.find({
             $and: [
                 { $text: { $search: req.query.title } },
@@ -59,6 +60,7 @@ app.get('/search', async (req, res) => {
         console.log(matchingDreams);
         res.render('search.ejs', {
             dreams: matchingDreams,
+            currentUser: thisUsersDbId,
         });
     } catch (err) {
         console.log(err);
