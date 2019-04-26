@@ -46,36 +46,55 @@ require('./db/db');
 // });
 
 // SEARCH ROUTE
-app.get('/search', (req, res) => {
-    Dream.find(
-      { $text: { $search: req.query.title } },
-      { score: { $meta: 'textScore' } })
-      .sort({ score: { $meta: 'textScore' } })
-      .exec((err, matchingDreams) => {
-        if (err) {
-          console.log(err);
-          res.send(err);
-        } else {
-          console.log(req.query.title);
-          console.log(matchingDreams);
-          res.render('search.ejs', {
-            dreams: matchingDreams,
-          });
-        }
-      });
-  });
-
-  // home page as login route
-  app.get('/', (req, res) => {
+// SEARCH ROUTE
+app.get('/search', async (req, res) => {
     try {
-      const thisUsersDbId = req.session.usersDbId;
-      res.render('auth/login.ejs', {
-        currentUser : thisUsersDbId
-      });
+        const matchingDreams = await Dream.find({
+            $and: [
+                { $text: { $search: req.query.title } },
+                // { score: { $meta: 'textScore' } },
+                { public: true }],
+        });
+        // .sort({ score: { $meta: 'textScore' } });
+        console.log(matchingDreams);
+        res.render('search.ejs', {
+            dreams: matchingDreams,
+        });
     } catch (err) {
-      res.send(err);
+        console.log(err);
+        res.send(err);
     }
-  });
+});
+// app.get('/search', (req, res) => {
+//     Dream.find(
+//       { $text: { $search: req.query.title } },
+//       { score: { $meta: 'textScore' } })
+//       .sort({ score: { $meta: 'textScore' } })
+//       .exec((err, matchingDreams) => {
+//         if (err) {
+//           console.log(err);
+//           res.send(err);
+//         } else {
+//           console.log(req.query.title);
+//           console.log(matchingDreams);
+//           res.render('search.ejs', {
+//             dreams: matchingDreams,
+//           });
+//         }
+//       });
+//   });
+
+// home page as login route
+app.get('/', (req, res) => {
+    try {
+        const thisUsersDbId = req.session.usersDbId;
+        res.render('auth/login.ejs', {
+            currentUser : thisUsersDbId
+        });
+    } catch (err) {
+        res.send(err);
+    }
+});
 
 app.use('/users', userController);
 app.use('/dreams', dreamController);

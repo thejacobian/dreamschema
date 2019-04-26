@@ -4,6 +4,7 @@ const dreamSchema = mongoose.Schema({
     title: String,
     body: String,
     date: Date,
+    public: Boolean,
     keywords: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Keyword'
@@ -11,6 +12,7 @@ const dreamSchema = mongoose.Schema({
 });
 
 dreamSchema.index({ title: 'text', body: 'text' });
+
 const Dream = mongoose.model('Dream', dreamSchema);
 
 module.exports = Dream;

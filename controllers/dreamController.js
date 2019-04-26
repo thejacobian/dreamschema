@@ -1,4 +1,6 @@
+/* eslint-disable no-underscore-dangle */
 const express = require('express');
+
 const router = express.Router();
 const User = require('../models/users');
 const Dream = require('../models/dreams');
@@ -12,27 +14,28 @@ router.get('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const myDbUser = await User.findById(thisUsersDbId)
-        .populate('dreams');
-        
+            .populate('dreams');
+
         res.render('dreams/index.ejs', {
             dreams: myDbUser.dreams,
-            currentUser : thisUsersDbId
+            currentUser: thisUsersDbId,
         });
-    }catch(err){
-        res.send(err)
-    };
+    } catch (err) {
+        res.send(err);
+    }
 });
 
 // NEW ROUTE
 router.get('/new', async (req, res) => {
-    try{
+    try {
         const thisUsersDbId = req.session.usersDbId;
         const keywords = await Keyword.find();
-    res.render('dreams/new.ejs', {
-        keywords: keywords,
-        currentUser : thisUsersDbId
-    })}catch(err){
-        res.send(err)
+        res.render('dreams/new.ejs', {
+            keywords,
+            currentUser: thisUsersDbId,
+        });
+    } catch (err) {
+        res.send(err);
     }
 });
 
@@ -40,28 +43,28 @@ router.get('/new', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        const myDream = await Dream.findById(req.params.id);
-        const myKeyword = await Keyword.findById(myDream.keywords[0]);
+        const thisDream = await Dream.findById(req.params.id);
+        const myKeyword = await Keyword.findById(thisDream.keywords[0]);
         console.log(myKeyword);
-        const myDbUser = await User.findOne({'dreams': req.params.id});
+        const myDbUser = await User.findOne({ dreams: req.params.id });
         console.log(myDbUser);
 
         // const myDbUserKeywords = await Keywords.findById(myDbUser.);
 
-        if (myDbUser._id.toString() === thisUsersDbId.toString()){
+        if ((myDbUser._id.toString() === thisUsersDbId.toString()) || (thisDream.public === true)) {
             res.render('dreams/show.ejs', {
-                    dream: myDream,
-                    currentUser : thisUsersDbId,
-                    keywords: myKeyword
-                });
-            } else {
-                req.session.message = 'You dont have access to this dream';
-                console.log(req.session.message);
-                res.send(req.session.message);
-            }
-    } catch(err) {
+                dream: thisDream,
+                currentUser: thisUsersDbId,
+                keywords: myKeyword,
+            });
+        } else {
+            req.session.message = 'You dont have access to this dream';
+            console.log(req.session.message);
+            res.send(req.session.message);
+        }
+    } catch (err) {
         console.log(err);
-        res.send(err)
+        res.send(err);
     }
 });
 
@@ -78,7 +81,7 @@ router.post('/', async (req, res) => {
         newDreamsUser.dreams.push(newDream._id);
         newDreamsUser.save();
         res.redirect('/dreams');
-    } catch (err){
+    } catch (err) {
         res.send(err);
     }
 });
@@ -90,19 +93,19 @@ router.get('/:id/edit', async (req, res) => {
         const thisUsersDbId = req.session.usersDbId;
         const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
         myDbUser.dreams.forEach((myDream) => {
-            if (myDream._id.toString() === req.params.id) {
+            if (myDream._id.toString() === req.params.id.toString()) {
                 res.render('dreams/edit.ejs', {
                     dream: myDream,
-                    currentUser : thisUsersDbId
+                    currentUser: thisUsersDbId,
                 });
             } else {
                 req.session.message = 'You dont have access to this dream';
                 console.log(req.session.message);
                 res.send(req.session.message);
             }
-        })
-    }catch(err){
-        res.send(err)
+        });
+    } catch (err) {
+        res.send(err);
     }
 });
 
@@ -112,15 +115,15 @@ router.put('/:id', async (req, res) => {
         const thisUsersDbId = req.session.usersDbId;
 
         // await Dream.findById(req.params.id, req.body);
-        const foundUser = await User.findOne({'dreams': req.params.id});
-        if (foundUser._id.toString() === thisUsersDbId) {
-            const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        const foundUser = await User.findOne({ dreams: req.params.id });
+        if (foundUser._id.toString() === thisUsersDbId.toString()) {
+            const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, { new: true });
             console.log(updatedDream);
-            res.redirect('/dreams/' + req.params.id);
+            res.redirect(`/dreams/${req.params.id}`);
         } else {
             req.session.message = 'You dont have access to this dream';
             console.log(req.session.message);
-        }    
+        }
     } catch (err) {
         res.send(err);
     }
@@ -131,19 +134,20 @@ router.delete('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const deletedDream = await Dream.findByIdAndDelete(req.params.id);
-        const foundUser = await User.findOne({'dreams': req.params.id});
-            if (thisUsersDbId.toString() === foundUser._id.toString()) {
-                foundUser.dreams.remove(req.params.id);
-                foundUser.save();
-                console.log(foundUser);
-                res.redirect('/dreams');
-            } else {
-                req.session.message = 'You dont have access to this dream';
-                console.log(req.session.message);
-                res.send(req.session.message);
-            }
-        } catch(err) {
-        res.send(err)
+        console.log(deletedDream);
+        const foundUser = await User.findOne({ dreams: req.params.id });
+        if (thisUsersDbId.toString() === foundUser._id.toString()) {
+            foundUser.dreams.remove(req.params.id);
+            foundUser.save();
+            console.log(foundUser);
+            res.redirect('/dreams');
+        } else {
+            req.session.message = 'You dont have access to this dream';
+            console.log(req.session.message);
+            res.send(req.session.message);
+        }
+    } catch (err) {
+        res.send(err);
     }
 });
 
