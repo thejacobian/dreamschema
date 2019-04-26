@@ -11,7 +11,8 @@
             <div class="center-text">  
                  <h1><%=dream.title%></h1>
                     <p><%=dream.body%></p>
-                  
+                    <p><%=keywords.word%></p>
+                    <p><%=keywords.meaning%></p>
 
                 <form action="/dreams/<%=dream._id%>/edit" method="get">
                     <input type="submit" value="Edit Dream"/>
