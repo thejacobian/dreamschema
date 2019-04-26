@@ -38,6 +38,8 @@ router.get('/:id', async (req, res) => {
                 });
             } else {
                 req.session.message('You dont have access to this dream');
+                console.log(req.session.message);
+                res.send(req.session.message);
             }
         })
     }catch(err){
@@ -73,6 +75,7 @@ router.get('/:id/edit', async (req, res) => {
             } else {
                 req.session.message('You dont have access to this dream');
                 console.log(req.session.message);
+                res.send(req.session.message);
             }
         })
     }catch(err){
@@ -105,6 +108,7 @@ router.delete('/:id', async (req, res) => {
             } else {
                 req.session.message('You dont have access to this dream');
                 console.log(req.session.message);
+                res.send(req.session.message);
             }
         } catch(err) {
         res.send(err)
