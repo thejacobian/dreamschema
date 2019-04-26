@@ -17,8 +17,11 @@
                 </form>
                 <ul>
                 <% for (let i = 0; i < user.dreams.length; i++ ) {%>
-                    <li><%= user.dreams[i].title %></li>
-                    <li><%= user.dreams[i].keywords %></li>
+                    <li>Title: <a href="/dreams/<%= user.dreams[i]._id %>"><%= user.dreams[i].title %></a> - Keywords:
+                        <% for (let x = 0; x < user.dreams[i].keywords.length; x++ ) {%>
+                            <span> <%= user.dreams[i].keywords[x].word %></a></span>
+                        <% } %>
+                    </li>
                 <% } %>
                 </ul>
             </div>
