@@ -37,6 +37,7 @@ router.get('/:id', async (req, res) => {
         const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
         myDbUser.dreams.forEach((myDream) => {
             if (myDream._id.toString() === req.params.id) {
+                
                 res.render('dreams/show.ejs', {
                     dream: myDream
                 });
