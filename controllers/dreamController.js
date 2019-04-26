@@ -40,33 +40,21 @@ router.get('/new', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        console.log(thisUsersDbId);
-        const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
-
-        console.log(myDbUser, '<----myDbUser');
-        // const populateKeywords = await Keyword.findById(myDbUser.keywords).populate('keywords');
-        // console.log(populateKeywords, '<---- populateKeywords');
-        // console.log(myDbUser, '<---- myDbUser');
-
-        myDbUser.dreams.forEach((myDream) => {
-            if (myDream._id.toString() === req.params.id) {
-                // const myDreamKeywords = []
-                // console.log(myDreamKeywords, 'outside of for loop');
-                // for (let i =0; i < myDream.keywords.length; i++) {
-                //     myDreamKeywords.push(Keyword.findById(myDream.keywords[i]));
-                //     console.log(myDreamKeywords, 'inside for loop');
-                // };
-                res.render('dreams/show.ejs', {
+        const myDream = await Dream.findById(req.params.id);
+        const myDbUser = await User.findOne({'dreams': req.params.id});
+        console.log(myDbUser);
+        if (myDbUser._id.toString() === thisUsersDbId.toString()){
+            res.render('dreams/show.ejs', {
                     dream: myDream,
                     currentUser : thisUsersDbId
                 });
             } else {
-                req.session.message('You dont have access to this dream');
+                req.session.message = 'You dont have access to this dream';
                 console.log(req.session.message);
                 res.send(req.session.message);
             }
-        })
     } catch(err) {
+        console.log(err);
         res.send(err)
     }
 });
@@ -102,7 +90,7 @@ router.get('/:id/edit', async (req, res) => {
                     currentUser : thisUsersDbId
                 });
             } else {
-                req.session.message('You dont have access to this dream');
+                req.session.message = 'You dont have access to this dream';
                 console.log(req.session.message);
                 res.send(req.session.message);
             }
@@ -124,7 +112,7 @@ router.put('/:id', async (req, res) => {
             console.log(updatedDream);
             res.redirect('/dreams/' + req.params.id);
         } else {
-            req.session.message('You dont have access to this dream');
+            req.session.message = 'You dont have access to this dream';
             console.log(req.session.message);
         }    
     } catch (err) {
@@ -144,7 +132,7 @@ router.delete('/:id', async (req, res) => {
                 console.log(foundUser);
                 res.redirect('/dreams');
             } else {
-                req.session.message('You dont have access to this dream');
+                req.session.message = 'You dont have access to this dream';
                 console.log(req.session.message);
                 res.send(req.session.message);
             }
