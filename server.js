@@ -65,6 +65,18 @@ app.get('/search', (req, res) => {
       });
   });
 
+  // home page as login route
+  app.get('/', (req, res) => {
+    try {
+      const thisUsersDbId = req.session.usersDbId;
+      res.render('auth/login.ejs', {
+        currentUser : thisUsersDbId
+      });
+    } catch (err) {
+      res.send(err);
+    }
+  });
+
 app.use('/users', userController);
 app.use('/dreams', dreamController);
 app.use('/auth', authController);
