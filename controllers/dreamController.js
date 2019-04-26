@@ -41,12 +41,18 @@ router.get('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const myDream = await Dream.findById(req.params.id);
+        const myKeyword = await Keyword.findById(myDream.keywords[0]);
+        console.log(myKeyword);
         const myDbUser = await User.findOne({'dreams': req.params.id});
         console.log(myDbUser);
+
+        // const myDbUserKeywords = await Keywords.findById(myDbUser.);
+
         if (myDbUser._id.toString() === thisUsersDbId.toString()){
             res.render('dreams/show.ejs', {
                     dream: myDream,
-                    currentUser : thisUsersDbId
+                    currentUser : thisUsersDbId,
+                    keywords: myKeyword
                 });
             } else {
                 req.session.message = 'You dont have access to this dream';
@@ -71,7 +77,7 @@ router.post('/', async (req, res) => {
         const newDreamsUser = await User.findById(thisUsersDbId);
         newDreamsUser.dreams.push(newDream._id);
         newDreamsUser.save();
-        res.redirect('/users');
+        res.redirect('/dreams');
     } catch (err){
         res.send(err);
     }
