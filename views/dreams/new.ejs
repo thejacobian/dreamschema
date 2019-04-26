@@ -11,9 +11,17 @@
             <div class="center-text">  
                  <h1>NEW DREAM!</h1>
                     <form action="/dreams" method="POST">
-                        <input type="text" name="title" placeholder="Name your Dream!">
-                        <input type="text" name="body" placeholder="Describe your dream!">
+                        
+                        <select class="custom-select" name="keywordId">
+                            <%for(i=0; i < keywords.length; i++){%>
+                                <option value="<%=keywords[i]._id%>"><%=keywords[i].word%></option>
+                            <%}%>
+                        </select>
+
+                        <input type="text" name="title" placeholder="Name your Dream!"><br>
+                        <textarea name="body" placeholder="Describe your dream!"></textarea><br>
                         <input type="submit" value="Log Dream">
+
                     </form>
                 
             </div>

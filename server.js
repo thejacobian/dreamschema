@@ -24,7 +24,7 @@ app.use(morgan('short'));
 // app.use(showMessagesAndUsername);
 require('./db/db');
 
-const keywordsData = require('./populateKeywords');
+// const keywordsData = require('./populateKeywords');
 
 // INSERT USING MONGOOSE
 // ### Add the keyword test data
@@ -63,6 +63,18 @@ app.get('/search', (req, res) => {
           });
         }
       });
+  });
+
+  // home page as login route
+  app.get('/', (req, res) => {
+    try {
+      const thisUsersDbId = req.session.usersDbId;
+      res.render('auth/login.ejs', {
+        currentUser : thisUsersDbId
+      });
+    } catch (err) {
+      res.send(err);
+    }
   });
 
 app.use('/users', userController);
