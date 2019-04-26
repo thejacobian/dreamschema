@@ -28,18 +28,18 @@ const keywordsData = require('./populateKeywords');
 
 // INSERT USING MONGOOSE
 // ### Add the keyword test data
-keywordsData.forEach((keyword) => {
-    Keyword.create({
-      word: keyword.word,
-      meaning: keyword.meaning,
-      }, (err, createdKeyword) => {
-         if (err) {
-           console.log(err);
-         } else {
-           console.log(createdKeyword);
-         }
-    });
-});
+// keywordsData.forEach((keyword) => {
+//     Keyword.create({
+//       word: keyword.word,
+//       meaning: keyword.meaning,
+//       }, (err, createdKeyword) => {
+//          if (err) {
+//            console.log(err);
+//          } else {
+//            console.log(createdKeyword);
+//          }
+//     });
+// });
 
 // app.get('/', (req, res)=>{
 //     res.render("auth/login.ejs");
