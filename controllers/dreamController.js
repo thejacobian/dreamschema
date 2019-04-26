@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/users');
 const Dream = require('../models/dreams');
+const Keyword = require('../models/keywords');
 
 // add require login middleware
 
@@ -22,8 +23,11 @@ router.get('/', async (req, res) => {
 });
 
 // NEW ROUTE
-router.get('/new', (req, res) => {
-    res.render('dreams/new.ejs')
+router.get('/new', async (req, res) => {
+    const keywords = await Keyword.find();
+    res.render('dreams/new.ejs', {
+        keywords: keywords
+    })
 });
 
 // SHOW ROUTE
@@ -52,9 +56,14 @@ router.post('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const newDream = await Dream.create(req.body);
+        console.log(newDream, 'before keyword push!!!!');
+        newDream.keywords.push(req.body.keywordId);
+        console.log(newDream, 'after keyword push!!!');
         const newDreamsUser = await User.findById(thisUsersDbId);
         newDreamsUser.dreams.push(newDream._id);
         newDreamsUser.save();
+    
+
         res.redirect('/dreams');
     } catch (err){
         res.send(err);
