@@ -24,20 +24,35 @@ router.get('/', async (req, res) => {
 
 // NEW ROUTE
 router.get('/new', async (req, res) => {
-    const keywords = await Keyword.find();
+    try{
+        const keywords = await Keyword.find();
     res.render('dreams/new.ejs', {
         keywords: keywords
-    })
+    })}catch(err){
+        res.send(err)
+    }
 });
 
 // SHOW ROUTE
 router.get('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
+        console.log(thisUsersDbId);
         const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
+
+        console.log(myDbUser, '<----myDbUser');
+        // const populateKeywords = await Keyword.findById(myDbUser.keywords).populate('keywords');
+        // console.log(populateKeywords, '<---- populateKeywords');
+        // console.log(myDbUser, '<---- myDbUser');
+
         myDbUser.dreams.forEach((myDream) => {
             if (myDream._id.toString() === req.params.id) {
-                
+                // const myDreamKeywords = []
+                // console.log(myDreamKeywords, 'outside of for loop');
+                // for (let i =0; i < myDream.keywords.length; i++) {
+                //     myDreamKeywords.push(Keyword.findById(myDream.keywords[i]));
+                //     console.log(myDreamKeywords, 'inside for loop');
+                // };
                 res.render('dreams/show.ejs', {
                     dream: myDream
                 });
@@ -47,7 +62,7 @@ router.get('/:id', async (req, res) => {
                 res.send(req.session.message);
             }
         })
-    }catch(err){
+    } catch(err) {
         res.send(err)
     }
 });
@@ -59,13 +74,12 @@ router.post('/', async (req, res) => {
         const newDream = await Dream.create(req.body);
         console.log(newDream, 'before keyword push!!!!');
         newDream.keywords.push(req.body.keywordId);
+        newDream.save();
         console.log(newDream, 'after keyword push!!!');
         const newDreamsUser = await User.findById(thisUsersDbId);
         newDreamsUser.dreams.push(newDream._id);
         newDreamsUser.save();
-    
-
-        res.redirect('/dreams');
+        res.redirect('/users');
     } catch (err){
         res.send(err);
     }
