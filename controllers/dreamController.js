@@ -72,8 +72,14 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
+        if (req.body.public === "on") {
+            req.body.public = true;
+        } else {
+            req.body.public = false;
+        }
         const newDream = await Dream.create(req.body);
-        console.log(newDream, 'before keyword push!!!!');
+        console.log(req.body.public);
+        console.log(newDream.public);
         newDream.keywords.push(req.body.keywordId);
         newDream.save();
         console.log(newDream, 'after keyword push!!!');
