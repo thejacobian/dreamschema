@@ -1,30 +1,36 @@
+/* eslint-disable prefer-template */
 const express = require('express');
 const router = express.Router();
 const User = require('../models/users');
 const Dream = require('../models/dreams');
+const Keyword = require('../models/keywords');
 
 // index route
 router.get('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        const users = await User.find ({});
+        const users = await User.find({});
         res.render('users/index.ejs', {
             users: users,
-            currentUser : thisUsersDbId
+            currentUser: thisUsersDbId,
         });
     } catch (err) {
         res.send(err);
     }
 });
- // show route
+
+// show route
 router.get('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const foundUser = await User.findById(req.params.id)
-        .populate('dreams');
+            .populate({ path: 'dreams', populate: { path: 'keywords' } });
+
+        console.log(foundUser);
+       
         res.render('users/show.ejs', {
             user: foundUser,
-            currentUser : thisUsersDbId
+            currentUser: thisUsersDbId,
         });
     } catch (err) {
         res.send(err);
@@ -38,7 +44,7 @@ router.get('/:id', async (req, res) => {
         const foundUser = await User.findById(req.params.id);
         res.render('users/edit.ejs', {
             user: foundUser,
-            currentUser : thisUsersDbId
+            currentUser: thisUsersDbId,
         });
     } catch (err) {
         res.send(err);
@@ -49,8 +55,8 @@ router.get('/:id', async (req, res) => {
  router.put('/:id', async (req, res) => {
     try {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true});
-        console.log(updatedUser) 
-        res.redirect('/users/' + req.params.id)   
+        console.log(updatedUser);
+        res.redirect('/users/' + req.params.id);
     } catch (err) {
         res.send(err);
     }
@@ -63,9 +69,9 @@ router.get('/:id', async (req, res) => {
         console.log(deletedUser);
         await Dream.deleteMany({
             _id: {
-                $in: deletedUser.dreams
-            }
-        })
+                $in: deletedUser.dreams,
+            },
+        });
         res.redirect('/users');
     } catch (err) {
         res.send(err);
