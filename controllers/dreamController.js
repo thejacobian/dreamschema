@@ -83,10 +83,20 @@ router.get('/:id/edit', async (req, res) => {
 // UPDATE ROUTE
 router.put('/:id', async (req, res) => {
     try {
-        const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body);
-        res.redirect('/dreams/' + req.params.id);
+        const thisUsersDbId = req.session.usersDbId;
+
+        // await Dream.findById(req.params.id, req.body);
+        const foundUser = await User.findOne({'dreams': req.params.id});
+        if (foundUser._id.toString() === thisUsersDbId) {
+            const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, {new: true});
+            console.log(updatedDream);
+            res.redirect('/dreams/' + req.params.id);
+        } else {
+            req.session.message('You dont have access to this dream');
+            console.log(req.session.message);
+        }    
     } catch (err) {
-        res.send(err)
+        res.send(err);
     }
 });
 
@@ -94,7 +104,6 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-
         const deletedDream = await Dream.findByIdAndDelete(req.params.id);
         const foundUser = await User.findOne({'dreams': req.params.id});
             if (thisUsersDbId.toString() === foundUser._id.toString()) {
