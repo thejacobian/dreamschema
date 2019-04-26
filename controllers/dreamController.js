@@ -77,7 +77,7 @@ router.post('/', async (req, res) => {
         const newDreamsUser = await User.findById(thisUsersDbId);
         newDreamsUser.dreams.push(newDream._id);
         newDreamsUser.save();
-        res.redirect('/users');
+        res.redirect('/dreams');
     } catch (err){
         res.send(err);
     }

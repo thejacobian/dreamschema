@@ -9,10 +9,24 @@
     <div class="row justify-content-sm-center">
         <div class="col-sm-6">
             <div class="center-text">  
+
                  <h1><%=dream.title%></h1>
-                    <p><%=dream.body%></p>
-                    <p><%=keywords.word%></p>
-                    <p><%=keywords.meaning%></p>
+                    <p><i><%=dream.body%></i></p>
+                        
+                        <div class="card mb-3" style="max-width: 540px;">
+                        <div class="row no-gutters">
+                            <div class="col-md-4">
+                            <img src="https://source.unsplash.com/random?{<%=keywords.word%>}" class="card-img" alt="<%=keywords.word%>">
+                            </div>
+                            <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title"><%=keywords.word%></h5>
+                                <p class="card-text"></p>
+                                <p class="card-text"><small class="text-muted"><%=keywords.meaning%></small></p>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
 
                 <form action="/dreams/<%=dream._id%>/edit" method="get">
                     <input type="submit" value="Edit Dream"/>
