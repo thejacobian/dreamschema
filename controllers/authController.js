@@ -4,7 +4,10 @@ const User = require('../models/users');
 const bcrypt = require('bcryptjs');
 
 router.get('/register', (req, res) => {
-    res.render('auth/register.ejs');
+    const thisUsersDbId = req.session.usersDbId;
+    res.render('auth/register.ejs', {
+      currentUser : thisUsersDbId
+    });
 });
 
 router.post('/register', async (req, res) => {
@@ -24,7 +27,14 @@ router.post('/register', async (req, res) => {
   });
 
 router.get('/login', (req, res) => {
-  res.render('auth/login.ejs')
+  try {
+    const thisUsersDbId = req.session.usersDbId;
+    res.render('auth/login.ejs', {
+      currentUser : thisUsersDbId
+    });
+  } catch (err) {
+    res.send(err);
+  }
 });
 
 router.post('/login', async (req, res) => {
@@ -52,6 +62,16 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     res.send(err);
   }
+});
+
+router.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.redirect('/auth/login');
+    }
+  })
 });
 
 module.exports = router;
