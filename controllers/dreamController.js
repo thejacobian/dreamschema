@@ -68,17 +68,25 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
+        if (req.body.public === "on") {
+            req.body.public = true;
+        } else {
+            req.body.public = false;
+        }
         const newDream = await Dream.create(req.body);
+        console.log(req.body.public);
+        console.log(newDream.public);
         newDream.keywords.push(req.body.keywordId);
         newDream.save();
-        const newDreamsUser = await User.findById(thisUsersDbId);
-        newDreamsUser.dreams.push(newDream._id);
-        newDreamsUser.save();
         if (req.body.keywordId) {
             const keywordCount = await Keyword.findById(req.body.keywordId);
             keywordCount.count++;
             keywordCount.save();
         }
+        console.log(newDream, 'after keyword push!!!');
+        const newDreamsUser = await User.findById(thisUsersDbId);
+        newDreamsUser.dreams.push(newDream._id);
+        newDreamsUser.save();
         res.redirect('/dreams');
     } catch (err) {
         res.send(err);
