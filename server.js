@@ -47,51 +47,57 @@ require('./db/db');
 
 // SEARCH ROUTE
 // SEARCH ROUTE
-app.get('/search', async (req, res) => {
-    try {
-        const thisUsersDbId = req.session.usersDbId;
-        const matchingDreams = await Dream.find({
-            $and: [
-                { $text: { $search: req.query.title } },
-                // { score: { $meta: 'textScore' } },
-                { public: true }],
-        });
-        // .sort({ score: { $meta: 'textScore' } });
-        console.log(matchingDreams);
-        res.render('search.ejs', {
+// app.get('/search', async (req, res) => {
+//     try {
+//         const thisUsersDbId = req.session.usersDbId;
+//         const matchingDreams = await Dream.find({
+//             $and: [
+//                 { $text: { $search: req.query.title } },
+//                 // { score: { $meta: 'textScore' } },
+//                 { public: true }],
+//         });
+//         // .sort({ score: { $meta: 'textScore' } });
+//         console.log(matchingDreams);
+//         res.render('search.ejs', {
+//             dreams: matchingDreams,
+//             currentUser: thisUsersDbId,
+//         });
+//     } catch (err) {
+//         console.log(err);
+//         res.send(err);
+//     }
+// });
+app.get('/search', (req, res) => {
+    const thisUsersDbId = req.session.usersDbId;
+
+    Dream.find(
+      { $text: { $search: req.query.title } },
+      { score: { $meta: 'textScore' } })
+      .sort({ score: { $meta: 'textScore' } })
+      .exec((err, matchingDreams) => {
+        if (err) {
+          console.log(err);
+          res.send(err);
+        } else {
+          console.log(req.query.title);
+          console.log(matchingDreams);
+          res.render('search.ejs', {
             dreams: matchingDreams,
             currentUser: thisUsersDbId,
-        });
-    } catch (err) {
-        console.log(err);
-        res.send(err);
-    }
-});
-// app.get('/search', (req, res) => {
-//     Dream.find(
-//       { $text: { $search: req.query.title } },
-//       { score: { $meta: 'textScore' } })
-//       .sort({ score: { $meta: 'textScore' } })
-//       .exec((err, matchingDreams) => {
-//         if (err) {
-//           console.log(err);
-//           res.send(err);
-//         } else {
-//           console.log(req.query.title);
-//           console.log(matchingDreams);
-//           res.render('search.ejs', {
-//             dreams: matchingDreams,
-//           });
-//         }
-//       });
-//   });
+
+          });
+        }
+      });
+  });
 
 // home page as login route
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
+        const keywords = await Keyword.find();
         res.render('auth/login.ejs', {
-            currentUser : thisUsersDbId
+            currentUser : thisUsersDbId,
+            keywords: keywords,
         });
     } catch (err) {
         res.send(err);
