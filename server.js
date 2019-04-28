@@ -46,7 +46,6 @@ require('./db/db');
 // });
 
 // SEARCH ROUTE
-// SEARCH ROUTE
 app.get('/search', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
@@ -67,6 +66,8 @@ app.get('/search', async (req, res) => {
         res.send(err);
     }
 });
+
+// SEARCH ROUTE
 // app.get('/search', (req, res) => {
 //     Dream.find(
 //       { $text: { $search: req.query.title } },
