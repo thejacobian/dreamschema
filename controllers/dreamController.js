@@ -7,9 +7,23 @@ const User = require('../models/users');
 const Dream = require('../models/dreams');
 const Keyword = require('../models/keywords');
 
-const maxKeywords = 3; //max num keywords to display
+const maxTextKeywords = 2; //max num keywords to display
 
 // add require login middleware
+
+// helper function to randomize array from Stack Overflow
+/**
+ * Randomize array element order in-place.
+ * Using Durstenfeld shuffle algorithm.
+ */
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+};
 
 // INDEX ROUTE
 router.get('/', async (req, res) => {
@@ -46,6 +60,7 @@ router.get('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const thisDream = await Dream.findById(req.params.id);
+        shuffleArray(thisDream.keywords); // randomly shuffle displayed keyword
         const myKeyword = await Keyword.findById(thisDream.keywords[0]);
         console.log(myKeyword);
         const myDbUser = await User.findOne({ dreams: req.params.id });
@@ -70,14 +85,15 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// helper function to match up dreamText with keywords
+// helper function to match up dream content with keywords
 const findAllKeywordsInDreamText = async (reqBody) => {
     try {
         const dreamText = reqBody.body.toLocaleLowerCase();
+        const dreamTitle = reqBody.title.toLocaleLowerCase();
         const allKeywords = await Keyword.find({});
         const allMatchingKeywords = [];
         allKeywords.forEach((keyword) => {
-            if (dreamText.includes(` ${keyword.word} `)) {
+            if (dreamText.includes(` ${keyword.word} `) || dreamTitle.includes(` ${keyword.word} `)) {
                 allMatchingKeywords.push(keyword._id);
             }
         });
@@ -86,20 +102,6 @@ const findAllKeywordsInDreamText = async (reqBody) => {
     } catch (err) {
         console.log(err);
         return (err);
-    }
-};
-
-// helper function to randomize array from Stack Overflow
-/**
- * Randomize array element order in-place.
- * Using Durstenfeld shuffle algorithm.
- */
-const shuffleArray = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
     }
 };
 
@@ -118,11 +120,10 @@ router.post('/', async (req, res) => {
         
         // add a few random keywords from req.body into dream.keywords array
         const keywordsInBody = await findAllKeywordsInDreamText(req.body);
-        if (keywordsInBody.length > 0) {
-            shuffleArray(keywordsInBody); // shuffle keywords in place for random population
-            for (let i = 0; i < maxKeywords; i++) {
-                newDream.keywords.push(keywordsInBody[i]);
-            }
+
+        shuffleArray(keywordsInBody); // shuffle keywords in place for random population
+        for (let i = 0; i < keywordsInBody.length && i < maxTextKeywords; i++) {
+            newDream.keywords.push(keywordsInBody[i]);
         }
 
         // also add in the one drop-down selected keyword as well (if not already present)
