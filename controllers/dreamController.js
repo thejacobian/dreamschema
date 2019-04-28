@@ -7,7 +7,7 @@ const User = require('../models/users');
 const Dream = require('../models/dreams');
 const Keyword = require('../models/keywords');
 
-const maxTextKeywords = 2; //max num keywords to display
+const maxTextKeywords = 3; //max num keywords to display
 
 // add require login middleware
 
@@ -86,7 +86,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // helper function to match up dream content with keywords
-const findAllKeywordsInDreamText = async (reqBody) => {
+const findAllKeywordsInDream = async (reqBody) => {
     try {
         const dreamText = reqBody.body.toLocaleLowerCase();
         const dreamTitle = reqBody.title.toLocaleLowerCase();
@@ -118,27 +118,32 @@ router.post('/', async (req, res) => {
         // create new dream
         const newDream = await Dream.create(req.body);
         
-        // add a few random keywords from req.body into dream.keywords array
-        const keywordsInBody = await findAllKeywordsInDreamText(req.body);
-
-        shuffleArray(keywordsInBody); // shuffle keywords in place for random population
-        for (let i = 0; i < keywordsInBody.length && i < maxTextKeywords; i++) {
-            newDream.keywords.push(keywordsInBody[i]);
-        }
-
-        // also add in the one drop-down selected keyword as well (if not already present)
-        if (!newDream.keywords.includes(req.body.keywordId)) {
-            newDream.keywords.push(req.body.keywordId);
-        }
-
+        // add drop-down keyword/theme user chose
+        newDream.keywords.push(req.body.keywordId);
         // save the dream
-        newDream.save();
+        await newDream.save();
+
+        // add a few random keywords from req.body into dream.keywords array
+        const keywordsInBody = await findAllKeywordsInDream(req.body);
+
+        if (keywordsInBody.length > 0) {
+            shuffleArray(keywordsInBody); // shuffle keywords in place for random population
+            for (let i = 0; i < keywordsInBody.length && i < maxTextKeywords; i++) {
+                // add keyword if not already present from dropdown
+                if (newDream.keywords.includes(keywordsInBody[i]) === false) {
+                    newDream.keywords.push(keywordsInBody[i]);
+                }
+            }
+            // save the dream
+            await newDream.save();
+        }
+
         console.log(newDream, 'after keyword push!!!');
 
         // save the user
         const newDreamsUser = await User.findById(thisUsersDbId);
         newDreamsUser.dreams.push(newDream._id);
-        newDreamsUser.save();
+        await newDreamsUser.save();
         res.redirect('/dreams');
     } catch (err) {
         res.send(err);
@@ -197,7 +202,7 @@ router.delete('/:id', async (req, res) => {
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (thisUsersDbId.toString() === foundUser._id.toString()) {
             foundUser.dreams.remove(req.params.id);
-            foundUser.save();
+            await foundUser.save();
             console.log(foundUser);
             res.redirect('/dreams');
         } else {
