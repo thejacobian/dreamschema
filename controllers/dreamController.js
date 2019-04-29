@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-underscore-dangle */
 const express = require('express');
 
@@ -5,6 +6,9 @@ const router = express.Router();
 const User = require('../models/users');
 const Dream = require('../models/dreams');
 const Keyword = require('../models/keywords');
+
+const maxKeywords = 3; //max num keywords to display
+
 
 // add require login middleware
 
@@ -28,7 +32,7 @@ router.get('/', async (req, res) => {
 router.get('/new', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        const keywords = await Keyword.find();
+        const keywords = await Keyword.find().sort('word');
         res.render('dreams/new.ejs', {
             keywords,
             currentUser: thisUsersDbId,
@@ -64,19 +68,67 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// helper function to match up dreamText with keywords
+const findAllKeywordsInDreamText = async (reqBody) => {
+    try {
+        const dreamText = reqBody.body.toLocaleLowerCase();
+        const allKeywords = await Keyword.find({});
+        const allMatchingKeywords = [];
+        allKeywords.forEach((keyword) => {
+            if (dreamText.includes(` ${keyword.word} `)) {
+                allMatchingKeywords.push(keyword._id);
+            }
+        });
+        console.log(allMatchingKeywords);
+        return (allMatchingKeywords);
+    } catch (err) {
+        console.log(err);
+        return (err);
+    }
+};
+
+// helper function to randomize array from Stack Overflow
+/**
+ * Randomize array element order in-place.
+ * Using Durstenfeld shuffle algorithm.
+ */
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+};
+
 // CREATE ROUTE
 router.post('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        if (req.body.public === "on") {
+        if (req.body.public === 'on') {
             req.body.public = true;
         } else {
             req.body.public = false;
         }
+
+        // create new dream
         const newDream = await Dream.create(req.body);
-        console.log(req.body.public);
-        console.log(newDream.public);
-        newDream.keywords.push(req.body.keywordId);
+        
+        // add a few random keywords from req.body into dream.keywords array
+        const keywordsInBody = await findAllKeywordsInDreamText(req.body);
+        if (keywordsInBody.length > 0) {
+            shuffleArray(keywordsInBody); // shuffle keywords in place for random population
+            for (let i = 0; i < maxKeywords; i++) {
+                newDream.keywords.push(keywordsInBody[i]);
+            }
+        }
+
+        // also add in the one drop-down selected keyword as well (if not already present)
+        if (!newDream.keywords.includes(req.body.keywordId)) {
+            newDream.keywords.push(req.body.keywordId);
+        }
+
+        // save the dream
         newDream.save();
         if (req.body.keywordId) {
             const keywordCount = await Keyword.findById(req.body.keywordId);
@@ -84,6 +136,8 @@ router.post('/', async (req, res) => {
             keywordCount.save();
         }
         console.log(newDream, 'after keyword push!!!');
+
+        // save the user
         const newDreamsUser = await User.findById(thisUsersDbId);
         newDreamsUser.dreams.push(newDream._id);
         newDreamsUser.save();
