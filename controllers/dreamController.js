@@ -9,6 +9,7 @@ const Keyword = require('../models/keywords');
 
 const maxKeywords = 3; //max num keywords to display
 
+
 // add require login middleware
 
 // INDEX ROUTE
@@ -50,9 +51,6 @@ router.get('/:id', async (req, res) => {
         console.log(myKeyword);
         const myDbUser = await User.findOne({ dreams: req.params.id });
         console.log(myDbUser);
-
-        // const myDbUserKeywords = await Keywords.findById(myDbUser.);
-
         if ((myDbUser._id.toString() === thisUsersDbId.toString()) || (thisDream.public === true)) {
             res.render('dreams/show.ejs', {
                 dream: thisDream,
@@ -132,6 +130,11 @@ router.post('/', async (req, res) => {
 
         // save the dream
         newDream.save();
+        if (req.body.keywordId) {
+            const keywordCount = await Keyword.findById(req.body.keywordId);
+            keywordCount.count++;
+            keywordCount.save();
+        }
         console.log(newDream, 'after keyword push!!!');
 
         // save the user
@@ -145,13 +148,19 @@ router.post('/', async (req, res) => {
 });
 
 // EDIT ROUTE
-// if trying to go to someone else's edit dream page, it gives empty object instead of res.session.message
 router.get('/:id/edit', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
         myDbUser.dreams.forEach((myDream) => {
             if (myDream._id.toString() === req.params.id.toString()) {
+                // if (req.body.keywordId != myDream._id) {
+                //     const keywordChange = Keyword.findById(req.body.keywordId);
+                //     myDream.keywordId = req.body.keywordId;
+                //     keywordChange.count++;
+                //     keywordChange.save();
+                //     console.log(keywordChange)
+                // }
                 res.render('dreams/edit.ejs', {
                     dream: myDream,
                     currentUser: thisUsersDbId,
