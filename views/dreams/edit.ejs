@@ -46,7 +46,11 @@
                         <input type="date" class="form-control" id="exampleInputDatePicker1" name="date" value="<%=datePickerFormat%>" required>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="public" id="invalidCheck1">
+                        <% if (dream.public) { %>
+                            <input class="form-check-input" type="checkbox" name="public" id="invalidCheck1" checked="checked">
+                        <% } else { %>
+                            <input class="form-check-input" type="checkbox" name="public" id="invalidCheck1">
+                        <% } %>
                         <label class="form-check-label" for="invalidCheck1">Set dream to Public?</label>
                     </div>
                     <button type="submit" class="btn btn-success btn-lg" vaue="Update Dream">Submit Edits</button>
