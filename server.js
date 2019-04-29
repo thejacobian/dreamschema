@@ -88,11 +88,13 @@ app.get('/search', async (req, res) => {
 //   });
 
 // home page as login route
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
+        const keywords = await Keyword.find();
         res.render('auth/login.ejs', {
-            currentUser : thisUsersDbId
+            currentUser : thisUsersDbId,
+            keywords: keywords,
         });
     } catch (err) {
         res.send(err);
