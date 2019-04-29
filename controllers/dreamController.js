@@ -124,14 +124,14 @@ router.post('/', async (req, res) => {
         await newDream.save();
 
         // add a few random keywords from req.body into dream.keywords array
-        const keywordsInBody = await findAllKeywordsInDream(req.body);
+        const keywordsInText = await findAllKeywordsInDream(req.body);
 
-        if (keywordsInBody.length > 0) {
-            shuffleArray(keywordsInBody); // shuffle keywords in place for random population
-            for (let i = 0; i < keywordsInBody.length && i < maxTextKeywords; i++) {
+        if (keywordsInText.length > 0) {
+            shuffleArray(keywordsInText); // shuffle keywords in place for random population
+            for (let i = 0; i < keywordsInText.length && i < maxTextKeywords; i++) {
                 // add keyword if not already present from dropdown
-                if (newDream.keywords.includes(keywordsInBody[i]) === false) {
-                    newDream.keywords.push(keywordsInBody[i]);
+                if (newDream.keywords.includes(keywordsInText[i]) === false) {
+                    newDream.keywords.push(keywordsInText[i]);
                 }
             }
             // save the dream
