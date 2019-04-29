@@ -7,11 +7,10 @@ const User = require('../models/users');
 const Dream = require('../models/dreams');
 const Keyword = require('../models/keywords');
 
-const maxTextKeywords = 3; //max num keywords to display
+const maxTextKeywords = 3; // max num keywords to display
 
 
 // add require login middleware
-
 // helper function to randomize array from Stack Overflow
 /**
  * Randomize array element order in-place.
@@ -24,6 +23,48 @@ const shuffleArray = (array) => {
         array[i] = array[j];
         array[j] = temp;
     }
+};
+
+// converts the Month text to a Number equivalent
+const convertMonthTextToNumStr = (month) => {
+    switch (month) {
+    case 'JAN':
+        month = '01';
+        break;
+    case 'FEB':
+        month = '02';
+        break;
+    case 'MAR':
+        month = '03';
+        break;
+    case 'APR':
+        month = '04';
+        break;
+    case 'MAY':
+        month = '05';
+        break;
+    case 'JUN':
+        month = '06';
+        break;
+    case 'JUL':
+        month = '07';
+        break;
+    case 'AUG':
+        month = '08';
+        break;
+    case 'SEP':
+        month = '09';
+        break;
+    case 'OCT':
+        month = '10';
+        break;
+    case 'NOV':
+        month = '11';
+        break;
+    default: // DEC
+        month = '12';
+    }
+    return month;
 };
 
 // INDEX ROUTE
@@ -46,10 +87,14 @@ router.get('/', async (req, res) => {
 router.get('/new', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        const keywords = await Keyword.find().sort('word');
+        const allKeywords = await Keyword.find({}).sort('word');
+
+        let today = new Date().toISOString().substr(0, 10);
+
         res.render('dreams/new.ejs', {
-            keywords,
+            keywords: allKeywords,
             currentUser: thisUsersDbId,
+            todaysDate: today,
         });
     } catch (err) {
         res.send(err);
@@ -91,7 +136,7 @@ const findAllKeywordsInDream = async (reqBody) => {
         const allKeywords = await Keyword.find({});
         const allMatchingKeywords = [];
         allKeywords.forEach((keyword) => {
-            if (dreamText.includes(` ${keyword.word} `) || dreamTitle.includes(` ${keyword.word} `)) {
+            if (dreamText.includes(` ${keyword.word}`) || dreamTitle.includes(` ${keyword.word}`)) {
                 allMatchingKeywords.push(keyword._id);
             }
         });
@@ -115,7 +160,7 @@ router.post('/', async (req, res) => {
 
         // create new dream
         const newDream = await Dream.create(req.body);
-        
+
         // add drop-down keyword/theme user chose
         newDream.keywords.push(req.body.keywordId);
         // save the dream
@@ -128,7 +173,7 @@ router.post('/', async (req, res) => {
             shuffleArray(keywordsInText); // shuffle keywords in place for random population
             for (let i = 0; i < keywordsInText.length && i < maxTextKeywords; i++) {
                 // add keyword if not already present from dropdown
-                if (newDream.keywords.includes(keywordsInText[i]) === false) {
+                if (newDream.keywords.includes(` ${keywordsInText[i]} `) === false) {
                     newDream.keywords.push(keywordsInText[i]);
                 }
             }
@@ -155,30 +200,47 @@ router.post('/', async (req, res) => {
     }
 });
 
+
 // EDIT ROUTE
 router.get('/:id/edit', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
+        if (req.body.public === 'on') {
+            req.body.public = true;
+        } else {
+            req.body.public = false;
+        }
+
         const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
-        myDbUser.dreams.forEach((myDream) => {
-            if (myDream._id.toString() === req.params.id.toString()) {
-                // if (req.body.keywordId != myDream._id) {
-                //     const keywordChange = Keyword.findById(req.body.keywordId);
-                //     myDream.keywordId = req.body.keywordId;
-                //     keywordChange.count++;
-                //     keywordChange.save();
-                //     console.log(keywordChange)
-                // }
-                res.render('dreams/edit.ejs', {
-                    dream: myDream,
-                    currentUser: thisUsersDbId,
-                });
-            } else {
-                req.session.message = 'You dont have access to this dream';
-                console.log(req.session.message);
-                res.send(req.session.message);
+        console.log(myDbUser);
+
+        const allKeywords = await Keyword.find({}).sort('word');
+
+        const myDream = await Dream.findById(req.params.id);
+        console.log(myDream);
+
+        let foundDreamFlag = false;
+        myDbUser.dreams.forEach((myDbUserDream) => {
+            if (myDbUserDream._id.toString() === req.params.id.toString()) {
+                foundDreamFlag = true;
             }
         });
+
+        if (foundDreamFlag) {
+            // get the photos upload date and convert for display on edit page.
+            const datePickerFormat = myDream.date.toISOString().substr(0, 10);
+            res.render('dreams/edit.ejs', {
+                currentUser: thisUsersDbId,
+                dream: myDream,
+                keywords: allKeywords,
+                datePickerFormat,
+            });
+        } else {
+            req.session.message = 'You dont have access to this dream';
+            console.log(req.session.message);
+            res.send(req.session.message);
+        }
+
     } catch (err) {
         res.send(err);
     }
@@ -189,6 +251,14 @@ router.put('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
 
+        // if (!myDream.keywords.include(req.body.keywordId) {
+        //     const keywordChange = Keyword.findById(req.body.keywordId);
+        //     myDream.keywordId = req.body.keywordId;
+        //     keywordChange.count++;
+        //     keywordChange.save();
+        //     console.log(keywordChange)
+        // }
+        
         // await Dream.findById(req.params.id, req.body);
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (foundUser._id.toString() === thisUsersDbId.toString()) {
