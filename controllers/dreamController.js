@@ -136,11 +136,6 @@ router.post('/', async (req, res) => {
             await newDream.save();
         }
 
-        // also add in the one drop-down selected keyword as well (if not already present)
-        if (!newDream.keywords.includes(req.body.keywordId)) {
-            newDream.keywords.push(req.body.keywordId);
-        }
-
         // save the dream
         newDream.save();
         if (req.body.keywordId) {

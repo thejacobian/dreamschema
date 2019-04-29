@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/users');
 const bcrypt = require('bcryptjs');
+const Keyword = require('../models/keywords');
 
 router.get('/register', (req, res) => {
     const thisUsersDbId = req.session.usersDbId;
@@ -26,11 +27,15 @@ router.post('/register', async (req, res) => {
     }
   });
 
-router.get('/login', (req, res) => {
+router.get('/login', async (req, res) => {
   try {
+
+    const allKeywords = await Keyword.find({}); // find all keywords to fix leaderboard login bug
+
     const thisUsersDbId = req.session.usersDbId;
     res.render('auth/login.ejs', {
-      currentUser : thisUsersDbId
+      currentUser : thisUsersDbId,
+      keywords: allKeywords,
     });
   } catch (err) {
     res.send(err);
