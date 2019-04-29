@@ -11,6 +11,20 @@ li {
     font-size: 20px;
     list-style-type: none;
 }
+ 
+ul {
+    padding: 0;
+}
+
+.row.equal-height {
+    display: flex;
+    flex-wrap: wrap;
+ }
+ .row.equal-height > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+ }
+
 
 a {
     font-family: 'Roboto', sans-serif;
@@ -48,6 +62,10 @@ h1 {
     display: inline;
 }
 
+.card {
+    display: inline-block;
+    flex: 1;
+}
 
 .card-deck {
     margin: 50px auto;
@@ -59,3 +77,4 @@ h1 {
     height: 20vw;
     object-fit: cover;
 }
+

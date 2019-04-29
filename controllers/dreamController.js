@@ -68,7 +68,7 @@ router.get('/:id', async (req, res) => {
         shuffleArray(thisDream.keywords); // randomly shuffle displayed keyword
         let myKeywords = [];
         let thisKeyword;
-        for(i=0; i < maxTextKeywords; i++){
+        for(i=0; i < thisDream.keywords.length; i++){
             thisKeyword = await Keyword.findById(thisDream.keywords[i]);
             console.log(thisKeyword, "<===== inside the for loop!");
             myKeywords.push(thisKeyword);
@@ -136,7 +136,7 @@ router.post('/', async (req, res) => {
 
         if (keywordsInText.length > 0) {
             shuffleArray(keywordsInText); // shuffle keywords in place for random population
-            for (let i = 0; i < keywordsInText.length && i < maxTextKeywords; i++) {
+            for (let i = 0; i < keywordsInText.length && (i + 1) < maxTextKeywords; i++) {
                 // add keyword if not already present from dropdown
                 if (newDream.keywords.includes(` ${keywordsInText[i]} `) === false) {
                     newDream.keywords.push(keywordsInText[i]);

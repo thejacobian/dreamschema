@@ -32,9 +32,9 @@
               
               <div class= "col-10">
                <div class="center-text">
-
+                    
                          <% for (let i = 0; i < keywords.length; i++){%>
-                            <%if(keywords.length === 1){%>
+                            <div class = "card-deck">
                                 <div class="card" style="width: 15rem;">
                                         <img src="https://source.unsplash.com/random?{<%=keywords[i].word%>}" class="card-img-top" alt="<%=keywords[i].word%>">
                                     <div class="card-body">
@@ -42,19 +42,9 @@
                                         <p class="card-text"><small class="text-muted"><%=keywords[i].meaning%></small></p>
                                     </div>
                                 </div>
-                            <%} else {%>
-                                <div class="card-deck">
-                                    <div class="card" style="width: 15rem;">
-                                        <img src="https://source.unsplash.com/random?{<%=keywords[i].word%>}" class="card-img-top" alt="<%=keywords[i].word%>">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><%=keywords[i].word%></h5>
-                                        <p class="card-text"><small class="text-muted"><%=keywords[i].meaning%></small></p>
-                                    </div>
-                                </div>
-                                </div>
-                            <%}%>
-                <%}%>
-             
+                            </div>
+                            <%} %>
+                    
                     
                 
                     
