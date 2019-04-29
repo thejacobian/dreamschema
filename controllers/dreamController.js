@@ -25,47 +25,6 @@ const shuffleArray = (array) => {
     }
 };
 
-// converts the Month text to a Number equivalent
-const convertMonthTextToNumStr = (month) => {
-    switch (month) {
-    case 'JAN':
-        month = '01';
-        break;
-    case 'FEB':
-        month = '02';
-        break;
-    case 'MAR':
-        month = '03';
-        break;
-    case 'APR':
-        month = '04';
-        break;
-    case 'MAY':
-        month = '05';
-        break;
-    case 'JUN':
-        month = '06';
-        break;
-    case 'JUL':
-        month = '07';
-        break;
-    case 'AUG':
-        month = '08';
-        break;
-    case 'SEP':
-        month = '09';
-        break;
-    case 'OCT':
-        month = '10';
-        break;
-    case 'NOV':
-        month = '11';
-        break;
-    default: // DEC
-        month = '12';
-    }
-    return month;
-};
 
 // INDEX ROUTE
 router.get('/', async (req, res) => {
@@ -107,15 +66,21 @@ router.get('/:id', async (req, res) => {
         const thisUsersDbId = req.session.usersDbId;
         const thisDream = await Dream.findById(req.params.id);
         shuffleArray(thisDream.keywords); // randomly shuffle displayed keyword
-        const myKeyword = await Keyword.findById(thisDream.keywords[0]);
-        console.log(myKeyword);
+        let myKeywords = [];
+        let thisKeyword;
+        for(i=0; i < maxTextKeywords; i++){
+            thisKeyword = await Keyword.findById(thisDream.keywords[i]);
+            console.log(thisKeyword, "<===== inside the for loop!");
+            myKeywords.push(thisKeyword);
+        };
+        console.log(myKeywords);
         const myDbUser = await User.findOne({ dreams: req.params.id });
         console.log(myDbUser);
         if ((myDbUser._id.toString() === thisUsersDbId.toString()) || (thisDream.public === true)) {
             res.render('dreams/show.ejs', {
                 dream: thisDream,
                 currentUser: thisUsersDbId,
-                keywords: myKeyword,
+                keywords: myKeywords,
             });
         } else {
             req.session.message = 'You dont have access to this dream';
@@ -205,19 +170,10 @@ router.post('/', async (req, res) => {
 router.get('/:id/edit', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        if (req.body.public === 'on') {
-            req.body.public = true;
-        } else {
-            req.body.public = false;
-        }
 
-        const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
-        console.log(myDbUser);
-
+        const myDbUser = await User.findById(thisUsersDbId);
         const allKeywords = await Keyword.find({}).sort('word');
-
         const myDream = await Dream.findById(req.params.id);
-        console.log(myDream);
 
         let foundDreamFlag = false;
         myDbUser.dreams.forEach((myDbUserDream) => {
@@ -240,7 +196,6 @@ router.get('/:id/edit', async (req, res) => {
             console.log(req.session.message);
             res.send(req.session.message);
         }
-
     } catch (err) {
         res.send(err);
     }
@@ -250,6 +205,11 @@ router.get('/:id/edit', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
+        if (req.body.public === 'on') {
+            req.body.public = true;
+        } else {
+            req.body.public = false;
+        }
 
         // if (!myDream.keywords.include(req.body.keywordId) {
         //     const keywordChange = Keyword.findById(req.body.keywordId);
@@ -263,7 +223,6 @@ router.put('/:id', async (req, res) => {
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (foundUser._id.toString() === thisUsersDbId.toString()) {
             const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, { new: true });
-            console.log(updatedDream);
             res.redirect(`/dreams/${req.params.id}`);
         } else {
             req.session.message = 'You dont have access to this dream';
