@@ -22,18 +22,39 @@
     <div class="row justify-content-sm-center">
         <div class="col-sm-6">
             <div class="center-text">  
-                   <h1>Edit <%=dream.title%></h1>
-                        <form action="/dreams/<%=dream._id%>?_method=PUT" method="POST">
-                            <input type="text" name="title" value="<%=dream.title%>">
-                            <input type="text" name="body" value="<%=dream.body%>">
-                            <input type="submit" value="Update Dream">
-                        </form>
-                
+                <h1>Edit <%=dream.title%></h1>
+                <p><i>This is the page where you make any edits you need to your dream!</i></p>
+                <form action="/dreams/<%=dream._id%>?_method=PUT" method="POST">
+                    <div class="form-group">
+                        <label for="exampleInputTitle1">Title:</label>
+                        <input type="text" class="form-control" id="exampleInputTitle1" name="title" value="<%=dream.title%>">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Theme/Keyword:</label>
+                        <select class="form-control" id="exampleFormControlSelect1" name="keywordId" required>
+                        <% keywords.forEach((keyword) => { %>
+                            <option value="<%=keyword._id%>"><%=keyword.word%></option>
+                        <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputBodyText1">Describe your dream:</label>
+                        <textarea rows="8" class="form-control" name="body"><%=dream.body%></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputDatePicker1">Upload Date:</label>
+                        <input type="date" class="form-control" id="exampleInputDatePicker1" name="date" value="<%=datePickerFormat%>" required>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="public" id="invalidCheck1">
+                        <label class="form-check-label" for="invalidCheck1">Set dream to Public?</label>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg" vaue="Update Dream">Submit Edits</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
     <% include ../../partials/_bootstrap-links.ejs %>
 </body>
 </html>
