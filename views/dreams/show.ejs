@@ -9,27 +9,31 @@
     <div class="row justify-content-sm-center">
         <div class="col-sm-6">
             <div class="center-text">  
-
+                <div class = "page-header">
                  <h1><%=dream.title%></h1>
+                 </div>
                     <p><i><%=dream.body%></i></p>
+                
+                
                         
-                        
-                        <div class="card" style="width: 18rem;">
-                            <img src="https://source.unsplash.com/random?{<%=keywords.word%>}" class="card-img-top" alt="<%=keywords.word%>">
-                            <div class="card-body">
-                                <h5 class="card-title"><%=keywords.word%></h5>
-                                <p class="card-text"><small class="text-muted"><%=keywords.meaning%></small></p>
-                            </div>
-                            </div>
+                <div class="card" style="width: 18rem;">
+                    <img src="https://source.unsplash.com/random?{<%=keywords.word%>}" class="card-img-top" alt="<%=keywords.word%>">
+                    <div class="card-body">
+                        <h5 class="card-title"><%=keywords.word%></h5>
+                        <p class="card-text"><small class="text-muted"><%=keywords.meaning%></small></p>
+                    </div>
+                    </div>
                     
-
+                <div class="btn-group" role="group" aria-label="Basic example">    
                 <form action="/dreams/<%=dream._id%>/edit" method="get">
-                    <input type="submit" value="Edit Dream"/>
+                    <input type="submit" class="btn btn-secondary" value="Edit Dream"/>
                 </form>
 
                 <form action="/dreams/<%=dream._id%>?_method=DELETE" method="post">
-                    <input type="submit" value="Delete Dream"/>
+                    <input type="submit" class="btn btn-secondary" value="Delete Dream"/>
                 </form>
+                </div>
+                
             </div>
         </div>
     </div>

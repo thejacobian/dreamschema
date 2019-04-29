@@ -1,0 +1,53 @@
+* {
+    font-family: 'Roboto', sans-serif;
+    color: gray;
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+li {
+    font-size: 20px;
+    list-style-type: none;
+}
+
+a {
+    font-family: 'Roboto', sans-serif;
+    color: #4CAF50;
+}
+
+a:hover {
+    font-family: 'Roboto', sans-serif;
+    color: rgb(61, 143, 64);
+    text-decoration: none;
+}
+
+.navbar-brand {
+    text-transform: uppercase;
+    color: white;
+    letter-spacing: 5px;
+}
+
+h1 {
+    font-family: 'Shrikhand', cursive;
+    color: #333333;
+    margin: 25px auto 10px auto;
+}
+
+.nav-link {
+    font-size: 15px;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.btn {
+    margin: 20px 10px;
+    display: inline;
+}
+
+.card {
+    margin: 30px auto;
+}
