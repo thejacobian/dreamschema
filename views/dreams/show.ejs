@@ -7,34 +7,15 @@
 <div class="container-fluid">
  <% include ../../partials/_navbar.ejs %>
     <div class="row justify-content-sm-center">
-        <div class="col-sm-6">
+        <div class="col-6">
             <div class="center-text">  
                 <div class = "page-header">
+
                  <h1><%=dream.title%></h1>
                  </div>
                     <p><%=dream.body%></p>
-                
-               <% for (let i = 0; i < keywords.length; i++){%>
-                    <div class="card" style="width: 18rem;">
-                        <img src="https://source.unsplash.com/random?{<%=keywords[i].word%>}" class="card-img-top" alt="<%=keywords[i].word%>">
-                            <div class="card-body">
-                                <h5 class="card-title"><%=keywords[i].word%></h5>
-                                <p class="card-text"><small class="text-muted"><%=keywords[i].meaning%></small></p>
-                            </div>
-                    </div>
-                <%}%>
-             
-               
-                        
-                        <div class="card" style="width: 18rem;">
-                        <img src="https://source.unsplash.com/random?{<%=keywords.word%>}" class="card-img-top" alt="<%=keywords.word%>">
-                            <div class="card-body">
-                                <h5 class="card-title"><%=keywords.word%></h5>
-                                <p class="card-text"><small class="text-muted"><%=keywords.meaning%></small></p>
-                            </div>
-                    </div>
-                
-                    
+
+
                 <div class="btn-group" role="group" aria-label="Basic example">    
                 <form action="/dreams/<%=dream._id%>/edit" method="get">
                     <input type="submit" class="btn btn-secondary" value="Edit Dream"/>
@@ -44,11 +25,57 @@
                     <input type="submit" class="btn btn-secondary" value="Delete Dream"/>
                 </form>
                 </div>
+
+
+                </div>
+            </div>
+              
+              <div class= "col-10">
+               <div class="center-text">
+
+                         <% for (let i = 0; i < keywords.length; i++){%>
+                            <%if(keywords.length === 1){%>
+                                <div class="card" style="width: 15rem;">
+                                        <img src="https://source.unsplash.com/random?{<%=keywords[i].word%>}" class="card-img-top" alt="<%=keywords[i].word%>">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><%=keywords[i].word%></h5>
+                                        <p class="card-text"><small class="text-muted"><%=keywords[i].meaning%></small></p>
+                                    </div>
+                                </div>
+                            <%} else if (keywords.length === 2){%>
+                                <div class="card-deck">
+                                    <div class="card" style="width: 15rem;">
+                                        <img src="https://source.unsplash.com/random?{<%=keywords[i].word%>}" class="card-img-top" alt="<%=keywords[i].word%>">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><%=keywords[i].word%></h5>
+                                        <p class="card-text"><small class="text-muted"><%=keywords[i].meaning%></small></p>
+                                    </div>
+                                </div>
+                                </div>
+                            <%} else {%>
+                            <div class="card-deck">
+                                <div class="card" style="width: 15rem;">
+                                        <img src="https://source.unsplash.com/random?{<%=keywords[i].word%>}" class="card-img-top" alt="<%=keywords[i].word%>">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><%=keywords[i].word%></h5>
+                                        <p class="card-text"><small class="text-muted"><%=keywords[i].meaning%></small></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <%}%>
+                <%}%>
+             
+                    
+                
+                    
+                
                 
             </div>
         </div>
-    </div>
-</div>
+ </div>
+ </div>
+                </div>
+
 
     <% include ../../partials/_bootstrap-links.ejs %>
 </body>

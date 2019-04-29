@@ -49,11 +49,16 @@ h1 {
 }
 
 .card {
+    margin: auto auto;
+}
+
+.card-deck {
     margin: 50px auto;
+    display: inline-block;
 }
 
 .card-img-top {
     width: 100%;
-    height: 30vw;
+    height: 20vw;
     object-fit: cover;
 }
