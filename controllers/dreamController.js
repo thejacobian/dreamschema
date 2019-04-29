@@ -7,10 +7,24 @@ const User = require('../models/users');
 const Dream = require('../models/dreams');
 const Keyword = require('../models/keywords');
 
-const maxKeywords = 3; //max num keywords to display
+const maxTextKeywords = 3; //max num keywords to display
 
 
 // add require login middleware
+
+// helper function to randomize array from Stack Overflow
+/**
+ * Randomize array element order in-place.
+ * Using Durstenfeld shuffle algorithm.
+ */
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+};
 
 // INDEX ROUTE
 router.get('/', async (req, res) => {
@@ -47,6 +61,7 @@ router.get('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const thisDream = await Dream.findById(req.params.id);
+        shuffleArray(thisDream.keywords); // randomly shuffle displayed keyword
         const myKeyword = await Keyword.findById(thisDream.keywords[0]);
         console.log(myKeyword);
         const myDbUser = await User.findOne({ dreams: req.params.id });
@@ -68,14 +83,15 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// helper function to match up dreamText with keywords
-const findAllKeywordsInDreamText = async (reqBody) => {
+// helper function to match up dream content with keywords
+const findAllKeywordsInDream = async (reqBody) => {
     try {
         const dreamText = reqBody.body.toLocaleLowerCase();
+        const dreamTitle = reqBody.title.toLocaleLowerCase();
         const allKeywords = await Keyword.find({});
         const allMatchingKeywords = [];
         allKeywords.forEach((keyword) => {
-            if (dreamText.includes(` ${keyword.word} `)) {
+            if (dreamText.includes(` ${keyword.word} `) || dreamTitle.includes(` ${keyword.word} `)) {
                 allMatchingKeywords.push(keyword._id);
             }
         });
@@ -84,20 +100,6 @@ const findAllKeywordsInDreamText = async (reqBody) => {
     } catch (err) {
         console.log(err);
         return (err);
-    }
-};
-
-// helper function to randomize array from Stack Overflow
-/**
- * Randomize array element order in-place.
- * Using Durstenfeld shuffle algorithm.
- */
-const shuffleArray = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
     }
 };
 
@@ -114,13 +116,24 @@ router.post('/', async (req, res) => {
         // create new dream
         const newDream = await Dream.create(req.body);
         
+        // add drop-down keyword/theme user chose
+        newDream.keywords.push(req.body.keywordId);
+        // save the dream
+        await newDream.save();
+
         // add a few random keywords from req.body into dream.keywords array
-        const keywordsInBody = await findAllKeywordsInDreamText(req.body);
-        if (keywordsInBody.length > 0) {
-            shuffleArray(keywordsInBody); // shuffle keywords in place for random population
-            for (let i = 0; i < maxKeywords; i++) {
-                newDream.keywords.push(keywordsInBody[i]);
+        const keywordsInText = await findAllKeywordsInDream(req.body);
+
+        if (keywordsInText.length > 0) {
+            shuffleArray(keywordsInText); // shuffle keywords in place for random population
+            for (let i = 0; i < keywordsInText.length && i < maxTextKeywords; i++) {
+                // add keyword if not already present from dropdown
+                if (newDream.keywords.includes(keywordsInText[i]) === false) {
+                    newDream.keywords.push(keywordsInText[i]);
+                }
             }
+            // save the dream
+            await newDream.save();
         }
 
         // also add in the one drop-down selected keyword as well (if not already present)
@@ -140,7 +153,7 @@ router.post('/', async (req, res) => {
         // save the user
         const newDreamsUser = await User.findById(thisUsersDbId);
         newDreamsUser.dreams.push(newDream._id);
-        newDreamsUser.save();
+        await newDreamsUser.save();
         res.redirect('/dreams');
     } catch (err) {
         res.send(err);
@@ -205,7 +218,7 @@ router.delete('/:id', async (req, res) => {
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (thisUsersDbId.toString() === foundUser._id.toString()) {
             foundUser.dreams.remove(req.params.id);
-            foundUser.save();
+            await foundUser.save();
             console.log(foundUser);
             res.redirect('/dreams');
         } else {

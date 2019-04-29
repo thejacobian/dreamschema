@@ -11,7 +11,7 @@ const dreamSchema = mongoose.Schema({
     }]
 });
 
-dreamSchema.index({ title: 'text', body: 'text' });
+dreamSchema.index({ title: 'text', body: 'text', keyword: 'text' });
 
 const Dream = mongoose.model('Dream', dreamSchema);
 
