@@ -17,12 +17,16 @@ app.use(session({
     resave: false,
     saveUninitilized: false
 }));
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(morgan('short'));
 // app.use(requireLogin);
 // app.use(showMessagesAndUsername);
 require('./db/db');
+
+
+app.use(express.static('Public'));
 
 // const keywordsData = require('./populateKeywords');
 
