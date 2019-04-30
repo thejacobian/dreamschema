@@ -25,12 +25,11 @@ router.get('/:id', async (req, res) => {
         const thisUsersDbId = req.session.usersDbId;
         const foundUser = await User.findById(req.params.id)
             .populate({ path: 'dreams', populate: { path: 'keywords' } });
-
-        console.log(foundUser);
-       
+        const keywords = await Keyword.find();
         res.render('users/show.ejs', {
             user: foundUser,
             currentUser: thisUsersDbId,
+            keywords: keywords
         });
     } catch (err) {
         res.send(err);

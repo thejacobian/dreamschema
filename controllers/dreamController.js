@@ -32,10 +32,11 @@ router.get('/', async (req, res) => {
         const thisUsersDbId = req.session.usersDbId;
         const myDbUser = await User.findById(thisUsersDbId)
             .populate('dreams');
-
+        const keywords = await Keyword.find({}).sort([['count', -1]]);
         res.render('dreams/index.ejs', {
             dreams: myDbUser.dreams,
             currentUser: thisUsersDbId,
+            keywords: keywords
         });
     } catch (err) {
         res.send(err);
@@ -211,22 +212,12 @@ router.put('/:id', async (req, res) => {
             req.body.public = false;
         }
 
-        // if (!myDream.keywords.include(req.body.keywordId) {
-        //     const keywordChange = Keyword.findById(req.body.keywordId);
-        //     myDream.keywordId = req.body.keywordId;
-        //     keywordChange.count++;
-        //     keywordChange.save();
-        //     console.log(keywordChange)
-        // }
-        
-        // await Dream.findById(req.params.id, req.body);
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (foundUser._id.toString() === thisUsersDbId.toString()) {
             const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, { new: true });
             res.redirect(`/dreams/${req.params.id}`);
         } else {
             req.session.message = 'You dont have access to this dream';
-            console.log(req.session.message);
         }
     } catch (err) {
         res.send(err);
@@ -240,16 +231,16 @@ router.delete('/:id', async (req, res) => {
         const deletedDream = await Dream.findByIdAndDelete(req.params.id);
         console.log(deletedDream);
         const foundUser = await User.findOne({ dreams: req.params.id });
-        if (thisUsersDbId.toString() === foundUser._id.toString()) {
-            foundUser.dreams.remove(req.params.id);
-            await foundUser.save();
-            console.log(foundUser);
-            res.redirect('/dreams');
-        } else {
-            req.session.message = 'You dont have access to this dream';
-            console.log(req.session.message);
-            res.send(req.session.message);
+        foundUser.dreams.remove(req.params.id);
+        await foundUser.save();
+        if (req.body.keywordId) {
+            const keywordCount = await Keyword.findById(req.body.keywordId);
+            keywordCount.count--;
+            keywordCount.save();
         }
+        console.log(foundUser);
+        res.redirect('/dreams');
+
     } catch (err) {
         res.send(err);
     }

@@ -29,10 +29,8 @@ router.post('/register', async (req, res) => {
 
 router.get('/login', async (req, res) => {
   try {
-
-    const allKeywords = await Keyword.find({}); // find all keywords to fix leaderboard login bug
-
     const thisUsersDbId = req.session.usersDbId;
+    const allKeywords = await Keyword.find({}).sort([['count', -1]]); 
     res.render('auth/login.ejs', {
       currentUser : thisUsersDbId,
       keywords: allKeywords,
@@ -55,12 +53,12 @@ router.post('/login', async (req, res) => {
         console.log(req.session, 'successful login');
         res.redirect('/users');
       } else {
-        req.session.message = 'password incorrect'; //change this for implementation
+        req.session.message = 'Incorrect information. Please try again.';
         console.log(req.session.message);
         res.redirect('/auth/login');
       } 
     } else {
-      req.session.message = 'username is incorrect';
+      req.session.message = 'Incorrect information. Please try again.';
       console.log(req.session.message);
       res.redirect('/auth/login');
     }
