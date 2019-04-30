@@ -149,8 +149,6 @@ router.post('/', async (req, res) => {
             await newDream.save();
         }
 
-        // save the dream
-        newDream.save();
         if (req.body.keywordId) {
             const keywordCount = await Keyword.findById(req.body.keywordId);
             keywordCount.count++;
@@ -217,6 +215,29 @@ router.put('/:id', async (req, res) => {
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (foundUser._id.toString() === thisUsersDbId.toString()) {
             const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+                // add drop-down keyword/theme user chose
+                updatedDream.keywords = [];
+                updatedDream.keywords.push(req.body.keywordId);
+                // save the dream
+                await updatedDream.save();
+
+                // add a few random keywords from req.body into dream.keywords array
+                const keywordsInText = await findAllKeywordsInDream(req.body);
+
+                if (keywordsInText.length > 0) {
+                    shuffleArray(keywordsInText); // shuffle keywords in place for random population
+                    for (let i = 0; i < keywordsInText.length && (i + 1) < maxTextKeywords; i++) {
+                        // add keyword if not already present from dropdown
+                        if (updatedDream.keywords.includes(` ${keywordsInText[i]} `) === false) {
+                            updatedDream.keywords.push(keywordsInText[i]);
+                        }
+                    }
+                    // save the dream
+                    await updatedDream.save();
+                }
+
+
             res.redirect(`/dreams/${req.params.id}`);
         } else {
             req.session.message = 'You dont have access to this dream';

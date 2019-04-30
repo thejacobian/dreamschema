@@ -23,27 +23,29 @@
         <div class="col-sm-6">
             <div class="center-text">  
                   <h1>My Dreams</h1>
+                  <br>
                 <% for (let i = 0; i < user.dreams.length; i++ ) {%>
 
-                    <br><div class="date"><%=user.dreams[i].date.toISOString().substr(0, 10);%>:</div>
+                    <div class="date"><strong><%=user.dreams[i].date.toString().substr(0, 3) + ", " + user.dreams[i].date.toString().substr(4, 6) + ", " + user.dreams[i].date.toString().substr(10, 5) %>:</strong></div>
                     
-                    <a class = "dreamtitle" href="/dreams/<%= user.dreams[i]._id %>"><%= user.dreams[i].title %></a><br>
+                    <div><a class="dreamtitle" href="/dreams/<%= user.dreams[i]._id %>"><h4><%= user.dreams[i].title %></h4></a></div>
 
                         <% for (let x = 0; x < user.dreams[i].keywords.length; x++ ) {%>
 
-                           <div class="badge badge-dark"> <%= user.dreams[i].keywords[x].word %></a></div>
+                           <div class="keyword-badges"> <%= user.dreams[i].keywords[x].word %></a></div>
 
                         <% } %>
-
+                        <div class="dream-buttons">
                             <form action="/dreams/<%=dreams[i]._id%>/edit" method="get">
-                                <input type="submit" value="Edit Dream"/>
+                                <button class="btn btn-success" type="submit">Edit Dream</button>
                             </form>
-
+                        </div>
+                        <div class="dream-buttons">
                             <form action="/dreams/<%=dreams[i]._id%>?_method=DELETE" method="post">
-                                <input type="submit" value="Delete Dream"/>
+                                <button class="btn btn-success" type="submit">Delete Dream</button>
                             </form>
-
-                
+                        </div>
+                    <hr>
                 <% } %>
 
             </div>
