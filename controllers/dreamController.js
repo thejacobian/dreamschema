@@ -211,6 +211,7 @@ router.put('/:id', async (req, res) => {
         } else {
             req.body.public = false;
         }
+
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (foundUser._id.toString() === thisUsersDbId.toString()) {
             const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, { new: true });
