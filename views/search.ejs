@@ -8,27 +8,26 @@
         <div class="col-sm-6">
             <div class="center-text">  
                 <h1>Search Results</h1>
-                    <h4>Welcome to the search page!</h4>
-                    <h5>These are the matching public dreams for the search criteria:</h5> 
+                    <h2>All Public Dreams:</h2> 
                         <ul>
                             <% for (let i = 0; i < publicDreams.length; i++ ) {%>
-                                <li>Title: <a href="/dreams/<%= publicDreams[i]._id %>"><%= publicDreams[i].title %></a> - Keywords:
+                                <div><a class="dreamtitle" href="/dreams/<%= publicDreams[i]._id %>"><h4><%= publicDreams[i].title %></h4></a></div> 
                                     <% for (let x = 0; x < publicDreams[i].keywords.length; x++ ) {%>
-                                        <span> <%= publicDreams[i].keywords[x].word %></a></span>
+                                        <div class="keyword-badges"> <%= publicDreams[i].keywords[x].word %></a></div>
                                     <% } %>
                                 </li>
                             <% } %>
                         </ul>
-                    <h5>These are the matching private dreams for the search criteria:</h5> 
+
+                    <h2>Your Dreams:</h2> 
                         <ul>
                             <% for (let i = 0; i < usersDreams.length; i++ ) {%>
-                                <li>Title: <a href="/dreams/<%= usersDreams[i]._id %>"><%= usersDreams[i].title %></a> - Keywords:
+                                <div><a class="dreamtitle" href="/dreams/<%= usersDreams[i]._id %>"><h4><%= usersDreams[i].title %></h4></a></div>
                                     <% for (let x = 0; x < usersDreams[i].keywords.length; x++ ) {%>
-                                        <span> <%= usersDreams[i].keywords[x].word %></a></span>
+                                        <div class="keyword-badges"> <%= usersDreams[i].keywords[x].word %></a></div>
+                                
                                     <% } %>
-                                </li>
                             <% } %>
-                        </ul>
                     <form action="/#" method="GET">
                         <button class="btn btn-dark" type="submit">Return Home</button>
                     </form>              
