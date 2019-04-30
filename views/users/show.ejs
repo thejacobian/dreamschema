@@ -21,7 +21,7 @@
 
                 <% for (let i = 0; i < user.dreams.length; i++ ) {%>
 
-                    <br><div class="date"><%=user.dreams[i].date.toISOString().substr(0, 10);%>:</div>
+                    <br><div class="date"><%=user.dreams[i].date.toISOString().substr(0, 10);%></div>
                     
                     <a class = "dreamtitle" href="/dreams/<%= user.dreams[i]._id %>"><%= user.dreams[i].title %></a><br>
 

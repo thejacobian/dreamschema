@@ -24,8 +24,9 @@ body {
 h1 {
     font-family: 'Shrikhand', cursive;
     margin: 25px auto 10px auto;
-    font-size: 46px;
-    letter-spacing: .05em;
+    font-size: 50px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
 }
 
 h2 {
@@ -73,6 +74,8 @@ p {
     display: inline-block;
     font-size: 30px;
     color: white;
+    text-transform: uppercase;
+    letter-spacing: .15em;
 }
 
 ul {
@@ -109,6 +112,10 @@ a:hover {
     display: inline;
     text-transform: uppercase;
     letter-spacing: .15em;
+}
+
+.btn-group {
+    margin: auto auto;
 }
 
 .badge {
