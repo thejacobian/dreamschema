@@ -35,6 +35,7 @@
                            <div class="keyword-badges"> <%= user.dreams[i].keywords[x].word %></a></div>
 
                         <% } %>
+                        <br>
                         <div class="dream-buttons">
                             <form action="/dreams/<%=dreams[i]._id%>/edit" method="get">
                                 <button class="btn btn-success" type="submit">Edit Dream</button>

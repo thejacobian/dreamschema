@@ -47,6 +47,10 @@ h4 {
     font-size: 40px;
 }
 
+h5 {
+    color: grey;
+}
+
 p {
     font-size: 20px;
 }
@@ -130,13 +134,21 @@ a:hover {
 }
 
 .login-form {
-    text-transform: uppercase;
     margin: 20px;
-    letter-spacing: .15em;
 }
 
-input {
+.form-text {
+    text-transform: uppercase;
+    letter-spacing: .15em;
+    display: inline-block;
+    font-size: 20px;
+}
+
+.login {
     margin: 10px;
+    border-radius: 5px;
+    border: solid white 1px;
+    padding: 3px;
 }
 
 #signup-line {
@@ -160,4 +172,8 @@ hr {
     background-color: rgba(255, 255, 255, 0.5);
     height: 1px;
     margin: 50px 0 50px 0;
+}
+
+#exampleInputTitle1 {
+    margin-left: -0.5px;
 }
