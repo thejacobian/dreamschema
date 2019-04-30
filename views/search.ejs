@@ -1,33 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <% include ../partials/_head.ejs %>
-
 <body>
-
 <div class="container-fluid">
     <% include ../partials/_navbar.ejs %>
-
     <div class="row justify-content-sm-center">
         <div class="col-sm-6">
             <div class="center-text">  
-                <h1 class="display-4">Search Results</h1>
-                    <%# <div class="jumbotron jumbotron-fluid"> %>
-                    <p class="lead">This is the search page showing all the dreams matching your search!</p>
-                    <%# </div> %> 
-                    <p> These are the matching dreams for your search criteria:
+                <h1>Search Results</h1>
+                    <h4>Welcome to the search page!</h4>
+                    <h5>These are the matching public dreams for the search criteria:</h5> 
                         <ul>
-                            <% for(let i = 0; i < dreams.length; i++){ %>
-                                 <li><a href="/dreams/<%=dreams[i]._id%>"><%=dreams[i].title%></a></li>
-                             <% } %>
-                         </ul>
-                            <form action="/#" method="GET">
-                            <button class="btn btn-primary btn-lg" type="submit">Return Home</button>
-                            </form>                
+                            <% for (let i = 0; i < publicDreams.length; i++ ) {%>
+                                <li>Title: <a href="/dreams/<%= publicDreams[i]._id %>"><%= publicDreams[i].title %></a> - Keywords:
+                                    <% for (let x = 0; x < publicDreams[i].keywords.length; x++ ) {%>
+                                        <span> <%= publicDreams[i].keywords[x].word %></a></span>
+                                    <% } %>
+                                </li>
+                            <% } %>
+                        </ul>
+                    <h5>These are the matching private dreams for the search criteria:</h5> 
+                        <ul>
+                            <% for (let i = 0; i < usersDreams.length; i++ ) {%>
+                                <li>Title: <a href="/dreams/<%= usersDreams[i]._id %>"><%= usersDreams[i].title %></a> - Keywords:
+                                    <% for (let x = 0; x < usersDreams[i].keywords.length; x++ ) {%>
+                                        <span> <%= usersDreams[i].keywords[x].word %></a></span>
+                                    <% } %>
+                                </li>
+                            <% } %>
+                        </ul>
+                    <form action="/#" method="GET">
+                        <button class="btn btn-dark" type="submit">Return Home</button>
+                    </form>              
             </div>
         </div>
     </div>
 </div>
-
     <% include ../partials/_bootstrap-links.ejs %>
 </body>
 </html>

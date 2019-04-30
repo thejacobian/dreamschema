@@ -1,68 +1,107 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable no-underscore-dangle */
 const express = require('express');
+
 const app = express();
-const userController = require('./controllers/userController');
-const dreamController = require('./controllers/dreamController');
-const authController = require('./controllers/authController');
 const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const morgan = require('morgan');
+const authController = require('./controllers/authController');
+const dreamController = require('./controllers/dreamController');
+const userController = require('./controllers/userController');
 const requireLogin = require('./middleware/requireLogin');
 const showMessagesAndUsername = require('./middleware/showSessionMessages');
 const Dream = require('./models/dreams');
 const Keyword = require('./models/keywords');
+const User = require('./models/users');
 
 app.use(session({
-    secret: "sdflawiefuawi3ur487gbisub3w434",
+    secret: 'sdflawiefuawi3ur487gbisub3w434',
     resave: false,
-    saveUninitilized: false
+    saveUninitialized: false,
 }));
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('short'));
 // app.use(requireLogin);
 // app.use(showMessagesAndUsername);
 require('./db/db');
 
-
 app.use(express.static('Public'));
 
-// const keywordsData = require('./populateKeywords');
+const keywordsData = require('./populateKeywords');
 
-// INSERT USING MONGOOSE
-// ### Add the keyword test data
-// keywordsData.forEach((keyword) => {
-//     Keyword.create({
-//       word: keyword.word,
-//       meaning: keyword.meaning,
-//       }, (err, createdKeyword) => {
-//          if (err) {
-//            console.log(err);
-//          } else {
-//            console.log(createdKeyword);
-//          }
-//     });
-// });
+// Utility function from Stack Overflow to see if an object is empty
+const isEmpty = (obj) => {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) { return false; }
+    }
+    return true;
+};
 
-// app.get('/', (req, res)=>{
-//     res.render("auth/login.ejs");
-// });
+// Insert Using Mongoose called from home/index at localhost:3000/ ONLY if empty
+const populateKeywordsFunc = () => {
+    keywordsData.forEach((keyword) => {
+        Keyword.create({
+            word: keyword.word,
+            meaning: keyword.meaning,
+        }, (err, createdKeyword) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(createdKeyword);
+            }
+        });
+    });
+};
 
 // SEARCH ROUTE
 app.get('/search', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        const matchingDreams = await Dream.find({
+        const searchTerm = req.query.term.toString().toLocaleLowerCase();
+        const matchingPublicDreams = await Dream.find({
             $and: [
-                { $text: { $search: req.query.title } },
-                // { score: { $meta: 'textScore' } },
+                { $text: { $search: searchTerm } },
                 { public: true }],
+        }).populate('keywords').sort('title');
+
+        const matchingPrivateDreams = await Dream.find({
+            $and: [
+                { $text: { $search: searchTerm } },
+                { public: false }],
+        }).populate('keywords').sort('title');
+
+        const myDbUser = await User.findById(thisUsersDbId)
+            .populate('dreams');
+
+        // sort the usersDreams alphabetically by title
+        const sortedUsersDreams = myDbUser.dreams.sort((a, b) => {
+            if (a.title < b.title) { return -1; }
+            if (a.title > b.title) { return 1; }
+            return 0;
         });
-        // .sort({ score: { $meta: 'textScore' } });
-        console.log(matchingDreams);
+
+        console.log(matchingPrivateDreams);
+
+        const matchingUsersDreams = [];
+        sortedUsersDreams.forEach((userDream) => {
+            matchingPrivateDreams.forEach((privateDream) => {
+                if (userDream._id.toString() === privateDream._id.toString()) {
+                    matchingUsersDreams.push(privateDream);
+                    console.log(userDream._id);
+                    console.log(privateDream._id);
+                    console.log(sortedUsersDreams);
+                }
+            });
+        });
+
         res.render('search.ejs', {
-            dreams: matchingDreams,
+            publicDreams: matchingPublicDreams,
+            usersDreams: matchingUsersDreams,
             currentUser: thisUsersDbId,
         });
     } catch (err) {
@@ -71,34 +110,21 @@ app.get('/search', async (req, res) => {
     }
 });
 
-// SEARCH ROUTE
-// app.get('/search', (req, res) => {
-//     Dream.find(
-//       { $text: { $search: req.query.title } },
-//       { score: { $meta: 'textScore' } })
-//       .sort({ score: { $meta: 'textScore' } })
-//       .exec((err, matchingDreams) => {
-//         if (err) {
-//           console.log(err);
-//           res.send(err);
-//         } else {
-//           console.log(req.query.title);
-//           console.log(matchingDreams);
-//           res.render('search.ejs', {
-//             dreams: matchingDreams,
-//           });
-//         }
-//       });
-//   });
-
 // home page as login route
 app.get('/', async (req, res) => {
     try {
+        // Add the keyword test data if the collection is empty
+        const anyKeywords = await Keyword.find({});
+        if (isEmpty(anyKeywords)) {
+            populateKeywordsFunc();
+            console.log(anyKeywords);
+        }
+
         const thisUsersDbId = req.session.usersDbId;
-        const keywords = await Keyword.find();
+        const keywords = await Keyword.find({});
         res.render('auth/login.ejs', {
-            currentUser : thisUsersDbId,
-            keywords: keywords,
+            currentUser: thisUsersDbId,
+            keywords,
         });
     } catch (err) {
         res.send(err);
@@ -109,7 +135,6 @@ app.use('/users', userController);
 app.use('/dreams', dreamController);
 app.use('/auth', authController);
 
-app.listen(3000, ()=>{
-    console.log("server is go");
+app.listen(3000, () => {
+    console.log('server is go');
 });
-
