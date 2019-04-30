@@ -11,21 +11,22 @@
         <div class="col-sm-6">
             <div class="center-text">  
                 <h1>Login</h1>
-                    <form action="/auth/login" method="POST">
+                    <form class="login-form" action="/auth/login" method="POST">
                         <div>username: <input type="text" name="username"></div>
                         <div>password: <input type="text" name="password"></div>
-                        <input type="submit">
+                        <input class="btn btn-dark" type="submit">
                     </form>
-                    <div>Keyword Leaderboard<br>
-                    <ul>
+                    <hr>
+                    <div class="public-leaderboard"><h2>Keyword Leaderboard</h2>
+        
                     <% for (let i = 0; i < keywords.length; i++) {%>
                         <% if (keywords[i].count > 0) { %>
-                            <li><%= keywords[i].word %>: <%= keywords[i].count %></li>
+                            <p class="all-caps"><%= keywords[i].word %>: <%= keywords[i].count %></p>
                        <% } %>
                     <% } %>
-                    </ul>
+                    
                     </div>
-                    <div><a href="/auth/register">Don't have an account? Sign up.</a></div>
+                    <div id="signup-line"><a href="/auth/register">Don't have an account? Sign up.</a></div>
             </div>
         </div>
     </div>
