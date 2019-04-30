@@ -7,11 +7,10 @@ const User = require('../models/users');
 const Dream = require('../models/dreams');
 const Keyword = require('../models/keywords');
 
-const maxTextKeywords = 3; //max num keywords to display
+const maxTextKeywords = 3; // max num keywords to display
 
 
 // add require login middleware
-
 // helper function to randomize array from Stack Overflow
 /**
  * Randomize array element order in-place.
@@ -26,16 +25,18 @@ const shuffleArray = (array) => {
     }
 };
 
+
 // INDEX ROUTE
 router.get('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const myDbUser = await User.findById(thisUsersDbId)
             .populate('dreams');
-
+        const keywords = await Keyword.find({}).sort([['count', -1]]);
         res.render('dreams/index.ejs', {
             dreams: myDbUser.dreams,
             currentUser: thisUsersDbId,
+            keywords: keywords
         });
     } catch (err) {
         res.send(err);
@@ -46,10 +47,14 @@ router.get('/', async (req, res) => {
 router.get('/new', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        const keywords = await Keyword.find().sort('word');
+        const allKeywords = await Keyword.find({}).sort('word');
+
+        let today = new Date().toISOString().substr(0, 10);
+
         res.render('dreams/new.ejs', {
-            keywords,
+            keywords: allKeywords,
             currentUser: thisUsersDbId,
+            todaysDate: today,
         });
     } catch (err) {
         res.send(err);
@@ -62,15 +67,21 @@ router.get('/:id', async (req, res) => {
         const thisUsersDbId = req.session.usersDbId;
         const thisDream = await Dream.findById(req.params.id);
         shuffleArray(thisDream.keywords); // randomly shuffle displayed keyword
-        const myKeyword = await Keyword.findById(thisDream.keywords[0]);
-        console.log(myKeyword);
+        let myKeywords = [];
+        let thisKeyword;
+        for(i=0; i < thisDream.keywords.length; i++){
+            thisKeyword = await Keyword.findById(thisDream.keywords[i]);
+            console.log(thisKeyword, "<===== inside the for loop!");
+            myKeywords.push(thisKeyword);
+        };
+        console.log(myKeywords);
         const myDbUser = await User.findOne({ dreams: req.params.id });
         console.log(myDbUser);
         if ((myDbUser._id.toString() === thisUsersDbId.toString()) || (thisDream.public === true)) {
             res.render('dreams/show.ejs', {
                 dream: thisDream,
                 currentUser: thisUsersDbId,
-                keywords: myKeyword,
+                keywords: myKeywords,
             });
         } else {
             req.session.message = 'You dont have access to this dream';
@@ -91,7 +102,7 @@ const findAllKeywordsInDream = async (reqBody) => {
         const allKeywords = await Keyword.find({});
         const allMatchingKeywords = [];
         allKeywords.forEach((keyword) => {
-            if (dreamText.includes(` ${keyword.word} `) || dreamTitle.includes(` ${keyword.word} `)) {
+            if (dreamText.includes(` ${keyword.word}`) || dreamTitle.includes(` ${keyword.word}`)) {
                 allMatchingKeywords.push(keyword._id);
             }
         });
@@ -115,7 +126,7 @@ router.post('/', async (req, res) => {
 
         // create new dream
         const newDream = await Dream.create(req.body);
-        
+
         // add drop-down keyword/theme user chose
         newDream.keywords.push(req.body.keywordId);
         // save the dream
@@ -126,9 +137,9 @@ router.post('/', async (req, res) => {
 
         if (keywordsInText.length > 0) {
             shuffleArray(keywordsInText); // shuffle keywords in place for random population
-            for (let i = 0; i < keywordsInText.length && i < maxTextKeywords; i++) {
+            for (let i = 0; i < keywordsInText.length && (i + 1) < maxTextKeywords; i++) {
                 // add keyword if not already present from dropdown
-                if (newDream.keywords.includes(keywordsInText[i]) === false) {
+                if (newDream.keywords.includes(` ${keywordsInText[i]} `) === false) {
                     newDream.keywords.push(keywordsInText[i]);
                 }
             }
@@ -155,29 +166,37 @@ router.post('/', async (req, res) => {
     }
 });
 
+
 // EDIT ROUTE
 router.get('/:id/edit', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        const myDbUser = await User.findById(thisUsersDbId).populate('dreams');
-        myDbUser.dreams.forEach((myDream) => {
-            if (myDream._id.toString() === req.params.id.toString()) {
-                // if (req.body.keywordId != myDream._id) {
-                //     const keywordChange = Keyword.findById(req.body.keywordId);
-                //     myDream.keywordId = req.body.keywordId;
-                //     keywordChange.count++;
-                //     keywordChange.save();
-                //     console.log(keywordChange)
-                // }
-                res.render('dreams/edit.ejs', {
-                    dream: myDream,
-                    currentUser: thisUsersDbId,
-                });
-            } else {
-                req.session.message = 'You dont have access to this dream';
-                res.send(req.session.message);
+
+        const myDbUser = await User.findById(thisUsersDbId);
+        const allKeywords = await Keyword.find({}).sort('word');
+        const myDream = await Dream.findById(req.params.id);
+
+        let foundDreamFlag = false;
+        myDbUser.dreams.forEach((myDbUserDream) => {
+            if (myDbUserDream._id.toString() === req.params.id.toString()) {
+                foundDreamFlag = true;
             }
         });
+
+        if (foundDreamFlag) {
+            // get the photos upload date and convert for display on edit page.
+            const datePickerFormat = myDream.date.toISOString().substr(0, 10);
+            res.render('dreams/edit.ejs', {
+                currentUser: thisUsersDbId,
+                dream: myDream,
+                keywords: allKeywords,
+                datePickerFormat,
+            });
+        } else {
+            req.session.message = 'You dont have access to this dream';
+            console.log(req.session.message);
+            res.send(req.session.message);
+        }
     } catch (err) {
         res.send(err);
     }
@@ -187,8 +206,11 @@ router.get('/:id/edit', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-
-        // await Dream.findById(req.params.id, req.body);
+        if (req.body.public === 'on') {
+            req.body.public = true;
+        } else {
+            req.body.public = false;
+        }
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (foundUser._id.toString() === thisUsersDbId.toString()) {
             const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -205,24 +227,19 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        if (thisUsersDbId.toString() === foundUser._id.toString()) {
-            const deletedDream = await Dream.findByIdAndDelete(req.params.id);
-            console.log(deletedDream);
-            const foundUser = await User.findOne({ dreams: req.params.id });
-            foundUser.dreams.remove(req.params.id);
-            await foundUser.save();
-            if (req.body.keywordId) {
-                const keywordCount = await Keyword.findById(req.body.keywordId);
-                keywordCount.count--;
-                keywordCount.save();
-            }
-            console.log(foundUser);
-            res.redirect('/dreams');
-        } else {
-            req.session.message = 'You dont have access to this dream';
-            console.log(req.session.message);
-            res.send(req.session.message);
+        const deletedDream = await Dream.findByIdAndDelete(req.params.id);
+        console.log(deletedDream);
+        const foundUser = await User.findOne({ dreams: req.params.id });
+        foundUser.dreams.remove(req.params.id);
+        await foundUser.save();
+        if (req.body.keywordId) {
+            const keywordCount = await Keyword.findById(req.body.keywordId);
+            keywordCount.count--;
+            keywordCount.save();
         }
+        console.log(foundUser);
+        res.redirect('/dreams');
+
     } catch (err) {
         res.send(err);
     }
