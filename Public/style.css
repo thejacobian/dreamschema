@@ -1,8 +1,11 @@
-body {
-    background-image: url(./images/ivana-cajina-378753-unsplash.jpg);
+body { 
+    background: url(./images/ivana-cajina-378753-unsplash.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
     background-size: cover;
     color: white;
-}
+  }
 
 .container-fluid {
     padding: 0;
@@ -35,6 +38,10 @@ h3 {
     font-family: 'Shrikhand', cursive;
     margin: 25px auto 10px auto;
     font-size: 40px;
+}
+
+p {
+    font-size: 20px;
 }
 
 .all-caps {

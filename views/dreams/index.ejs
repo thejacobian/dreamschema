@@ -23,11 +23,18 @@
         <div class="col-sm-6">
             <div class="center-text">  
                   <h1>My Dreams</h1>
-                    <%for(let i=0; i < dreams.length; i++){%>
-                        <ul>
-                            <li><a href="/dreams/<%=dreams[i]._id%>"><%=dreams[i].title%></li>
-                            
-                            
+                <% for (let i = 0; i < user.dreams.length; i++ ) {%>
+
+                    <br><div class="date"><%=user.dreams[i].date.toISOString().substr(0, 10);%>:</div>
+                    
+                    <a class = "dreamtitle" href="/dreams/<%= user.dreams[i]._id %>"><%= user.dreams[i].title %></a><br>
+
+                        <% for (let x = 0; x < user.dreams[i].keywords.length; x++ ) {%>
+
+                           <div class="badge badge-dark"> <%= user.dreams[i].keywords[x].word %></a></div>
+
+                        <% } %>
+
                             <form action="/dreams/<%=dreams[i]._id%>/edit" method="get">
                                 <input type="submit" value="Edit Dream"/>
                             </form>
@@ -35,8 +42,10 @@
                             <form action="/dreams/<%=dreams[i]._id%>?_method=DELETE" method="post">
                                 <input type="submit" value="Delete Dream"/>
                             </form>
-                        </ul>
-                    <%}%>
+
+                
+                <% } %>
+
             </div>
         </div>
     </div>
