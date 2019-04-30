@@ -1,25 +1,50 @@
-* {
-    font-family: 'Roboto', sans-serif;
-    color: gray;
-}
+
 
 .container-fluid {
     padding: 0;
 }
 
-li {
-    font-size: 20px;
-    list-style-type: none;
+h1 {
+    font-family: 'Shrikhand', cursive;
+    color: #333333;
+    margin: 25px auto 10px auto;
+    font-size: 40px;
 }
- 
+
+.date {
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    color: #333333;
+    display: inline-block;
+}
+
+.dreamtitle {
+    display: inline-block;
+    font-size: 30px;
+}
+
+h3 {
+    font-family: 'Shrikhand', cursive;
+    color: #333333;
+    margin: 25px auto 10px auto;
+    font-size: 40px;
+}
+
 ul {
     padding: 0;
+}
+
+.badge {
+    margin: 10px 5px 40px 5px;
+    font-size: 15px;
+    padding: 5px 10px;
 }
 
 .row.equal-height {
     display: flex;
     flex-wrap: wrap;
  }
+
  .row.equal-height > [class*='col-'] {
     display: flex;
     flex-direction: column;
@@ -43,11 +68,7 @@ a:hover {
     letter-spacing: 5px;
 }
 
-h1 {
-    font-family: 'Shrikhand', cursive;
-    color: #333333;
-    margin: 25px auto 10px auto;
-}
+
 
 .nav-link {
     font-size: 15px;
