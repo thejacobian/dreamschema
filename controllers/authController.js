@@ -51,7 +51,7 @@ router.post('/login', async (req, res) => {
         req.session.username = req.body.username;
         req.session.usersDbId = foundUser._id;
         console.log(req.session, 'successful login');
-        res.redirect('/users');
+        res.redirect('/dreams');
       } else {
         req.session.message = 'Incorrect information. Please try again.';
         console.log(req.session.message);

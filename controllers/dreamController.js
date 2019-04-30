@@ -31,9 +31,10 @@ router.get('/', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const myDbUser = await User.findById(thisUsersDbId)
-            .populate('dreams');
+            .populate({ path: 'dreams', populate: { path: 'keywords' } });
         const keywords = await Keyword.find({}).sort([['count', -1]]);
         res.render('dreams/index.ejs', {
+            user: myDbUser,
             dreams: myDbUser.dreams,
             currentUser: thisUsersDbId,
             keywords: keywords
@@ -42,6 +43,7 @@ router.get('/', async (req, res) => {
         res.send(err);
     }
 });
+
 
 // NEW ROUTE
 router.get('/new', async (req, res) => {
