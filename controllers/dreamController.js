@@ -175,7 +175,6 @@ router.get('/:id/edit', async (req, res) => {
                 });
             } else {
                 req.session.message = 'You dont have access to this dream';
-                console.log(req.session.message);
                 res.send(req.session.message);
             }
         });
@@ -193,11 +192,9 @@ router.put('/:id', async (req, res) => {
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (foundUser._id.toString() === thisUsersDbId.toString()) {
             const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, { new: true });
-            console.log(updatedDream);
             res.redirect(`/dreams/${req.params.id}`);
         } else {
             req.session.message = 'You dont have access to this dream';
-            console.log(req.session.message);
         }
     } catch (err) {
         res.send(err);
@@ -208,12 +205,17 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-        const deletedDream = await Dream.findByIdAndDelete(req.params.id);
-        console.log(deletedDream);
-        const foundUser = await User.findOne({ dreams: req.params.id });
         if (thisUsersDbId.toString() === foundUser._id.toString()) {
+            const deletedDream = await Dream.findByIdAndDelete(req.params.id);
+            console.log(deletedDream);
+            const foundUser = await User.findOne({ dreams: req.params.id });
             foundUser.dreams.remove(req.params.id);
             await foundUser.save();
+            if (req.body.keywordId) {
+                const keywordCount = await Keyword.findById(req.body.keywordId);
+                keywordCount.count--;
+                keywordCount.save();
+            }
             console.log(foundUser);
             res.redirect('/dreams');
         } else {
