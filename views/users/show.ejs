@@ -7,24 +7,33 @@
 <div class="container-fluid">
     <% include ../../partials/_navbar.ejs %>
 
-<body id="bootstrap-overrides"> 
+<body> 
     <div class="row justify-content-sm-center">
         <div class="col-sm-6">
             <div class="center-text">  
-                <h1><%= user.username %> Show Page</h1>
+
+                <h1><%= user.username%>'s DreamSpace</h1>
                 <a href="/users/<%= user._id %>/edit"><button>Edit Profile</button></a>
                 <form action="/users/<%= user._id%>?_method=DELETE" method="post">
                     <button type="submit">Delete</button>
                 </form>
-                <ul>
+                
+
                 <% for (let i = 0; i < user.dreams.length; i++ ) {%>
-                    <li>Title: <a href="/dreams/<%= user.dreams[i]._id %>"><%= user.dreams[i].title %></a> - Keywords:
+
+                    <br><div class="date"><%=user.dreams[i].date.toISOString().substr(0, 10);%>:</div>
+                    
+                    <a class = "dreamtitle" href="/dreams/<%= user.dreams[i]._id %>"><%= user.dreams[i].title %></a><br>
+
                         <% for (let x = 0; x < user.dreams[i].keywords.length; x++ ) {%>
-                            <span> <%= user.dreams[i].keywords[x].word %></a></span>
+
+                           <div class="badge badge-dark"> <%= user.dreams[i].keywords[x].word %></a></div>
+
                         <% } %>
-                    </li>
+
+                
                 <% } %>
-                </ul>
+                
             </div>
         </div>
     </div>
