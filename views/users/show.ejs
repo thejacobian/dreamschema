@@ -33,7 +33,20 @@
 
                 
                 <% } %>
+<<<<<<< HEAD
                 
+=======
+                </ul>
+                <div>Your Most Used Keywords<br>
+                    <ul>
+                    <% for (let i = 0; i < keywords.length; i++) {%>
+                        <% if (keywords[i].count > 0) { %>
+                            <li><%= keywords[i].word %>: <%= keywords[i].count %></li>
+                       <% } %>
+                    <% } %>
+                    </ul>
+                </div>
+>>>>>>> origin/master
             </div>
         </div>
     </div>
