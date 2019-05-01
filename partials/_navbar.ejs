@@ -9,25 +9,15 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Users
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/users">View All Users</a>
-            <a class="dropdown-item" href="/auth/register">Create New User</a>
-            <%# <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">No Other Actions...</a> %>
-          </div>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Dreams
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/dreams">View All Dreams</a>
+            <a class="dropdown-item" href="/dreams">My Dreamspace</a>
             <a class="dropdown-item" href="/dreams/new">Create New Dream</a>
-            <%# <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">No Other Actions...</a> %>
           </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/users/<%= currentUser %>%>">My Profile</a>
         </li>
         <% if (!currentUser) {%>
         <li class="nav-item">
