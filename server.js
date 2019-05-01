@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-underscore-dangle */
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const methodOverride = require('method-override');
@@ -144,4 +144,4 @@ app.use('/auth', authController);
 
 app.listen(process.env.PORT, () => {
     console.log('listening on port 3000');
-  })
+});
