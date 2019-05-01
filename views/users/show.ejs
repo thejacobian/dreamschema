@@ -13,11 +13,14 @@
             <div class="center-text">  
 
                 <h1><%= user.username%>'s Profile</h1>
-                <a href="/users/<%= user._id %>/edit"><button>Edit Profile</button></a>
-                <form action="/users/<%= user._id%>?_method=DELETE" method="post">
-                    <button type="submit">Delete</button>
-                </form>
-                
+                <div class="dream-buttons">
+                    <a href="/users/<%= user._id %>/edit"><button type="submit" class="btn btn-success">Edit Profile</button></a>
+                </div>
+                <div class="dream-buttons">
+                    <form action="/users/<%= user._id%>?_method=DELETE" method="post">
+                        <button type="submit" class="btn btn-success">Delete Profile</button>
+                    </form>
+                </div>
 
                 <% for (let i = 0; i < user.dreams.length; i++ ) {%>
 
