@@ -73,12 +73,9 @@ router.get('/:id', async (req, res) => {
         let thisKeyword;
         for(i=0; i < thisDream.keywords.length; i++){
             thisKeyword = await Keyword.findById(thisDream.keywords[i]);
-            console.log(thisKeyword, "<===== inside the for loop!");
             myKeywords.push(thisKeyword);
         };
-        console.log(myKeywords);
         const myDbUser = await User.findOne({ dreams: req.params.id });
-        console.log(myDbUser);
         if ((myDbUser._id.toString() === thisUsersDbId.toString()) || (thisDream.public === true)) {
             res.render('dreams/show.ejs', {
                 dream: thisDream,
@@ -215,7 +212,7 @@ router.put('/:id', async (req, res) => {
         const foundUser = await User.findOne({ dreams: req.params.id });
         if (foundUser._id.toString() === thisUsersDbId.toString()) {
             const updatedDream = await Dream.findByIdAndUpdate(req.params.id, req.body, { new: true });
-
+            const updatedKeyword = await Dream.findOne({'keyword': req.body.keyword}).populate();
                 // add drop-down keyword/theme user chose
                 updatedDream.keywords = [];
                 updatedDream.keywords.push(req.body.keywordId);
@@ -236,8 +233,6 @@ router.put('/:id', async (req, res) => {
                     // save the dream
                     await updatedDream.save();
                 }
-
-
             res.redirect(`/dreams/${req.params.id}`);
         } else {
             req.session.message = 'You dont have access to this dream';

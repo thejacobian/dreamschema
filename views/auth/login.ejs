@@ -7,7 +7,7 @@
 <div class="container-fluid">
     <% include ../../partials/_navbar.ejs %>
 
-    <div class="row justify-content-sm-center">
+    <div class="row justify-content-center">
         <div class="col-sm-6">
             <div class="center-text">  
                 <h1>Login</h1>
@@ -17,7 +17,7 @@
                         <button class="btn btn-success" type="submit">Submit</button>
                     </form>
                     <hr>
-                    <div class="public-leaderboard"><h2>Keyword Leaderboard</h2>
+                    <div class="public-leaderboard"><h2>Most Popular Keywords/Themes</h2>
         
                     <% for (let i = 0; i < keywords.length; i++) {%>
                         <% if (keywords[i].count > 0) { %>
