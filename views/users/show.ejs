@@ -26,25 +26,14 @@
                         <button type="submit" class="btn btn-success">Delete Profile</button>
                     </form>
                 </div>
-
-              
-
-
-
-
-
-
-
-                
-                <div>Your Most Used Keywords<br>
-                    <ul>
-                    <% for (let i = 0; i < keywords.length; i++) {%>
-                        <% if (keywords[i].count > 0) { %>
-                            <li><%= keywords[i].word %>: <%= keywords[i].count %></li>
-                       <% } %>
-                    <% } %>
-                    </ul>
-                </div>
+                <hr class="personal-leaderboard">
+                    <div class="personal-leaderboard"><h2>Your Most Recent Themes</h2>
+                        <% for (let i = 0; i < user.dreams.length && i < 3; i++ ) {%>                    
+                            <% for (let x = 0; x < user.dreams[i].keywords.length; x++) {%>
+                                    <p class="all-caps"><%= user.dreams[i].keywords[x].word %></p>
+                            <% } %>
+                        <% } %>
+                    </div>
             </div>
         </div>
     </div>

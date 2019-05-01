@@ -73,7 +73,6 @@ router.get('/:id', async (req, res) => {
         let thisKeyword;
         for(i=0; i < thisDream.keywords.length; i++){
             thisKeyword = await Keyword.findById(thisDream.keywords[i]);
-            myKeywords.push(thisKeyword);
         };
         const myDbUser = await User.findOne({ dreams: req.params.id });
         if ((myDbUser._id.toString() === thisUsersDbId.toString()) || (thisDream.public === true)) {
@@ -87,6 +86,7 @@ router.get('/:id', async (req, res) => {
             console.log(req.session.message);
             res.send(req.session.message);
         }
+
     } catch (err) {
         console.log(err);
         res.send(err);
@@ -140,6 +140,7 @@ router.post('/', async (req, res) => {
                 // add keyword if not already present from dropdown
                 if (newDream.keywords.includes(` ${keywordsInText[i]} `) === false) {
                     newDream.keywords.push(keywordsInText[i]);
+                    user.keywords.push(newDream.keywords);
                 }
             }
             // save the dream
