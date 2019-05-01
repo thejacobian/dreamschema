@@ -158,7 +158,8 @@ a:hover {
     margin: 10px;
     border-radius: 5px;
     border: solid white 1px;
-    padding: 3px;
+    padding: 7px;
+    letter-spacing: .15em;
 }
 
 #signup-line {
