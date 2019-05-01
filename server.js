@@ -18,7 +18,7 @@ const Keyword = require('./models/keywords');
 const User = require('./models/users');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const store = new MongoDBStore({
-    uri: 'mongo://localhost/dream-app',
+    uri: process.env.MONGODB_URI,
     collection: 'mySessions'
 });
 
