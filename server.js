@@ -1,8 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-underscore-dangle */
+require('dotenv').config()
 const express = require('express');
-
 const app = express();
 const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
@@ -16,6 +16,7 @@ const showMessagesAndUsername = require('./middleware/showSessionMessages');
 const Dream = require('./models/dreams');
 const Keyword = require('./models/keywords');
 const User = require('./models/users');
+
 
 app.use(session({
     secret: 'sdflawiefuawi3ur487gbisub3w434',
@@ -135,6 +136,6 @@ app.use('/users', userController);
 app.use('/dreams', dreamController);
 app.use('/auth', authController);
 
-app.listen(3000, () => {
-    console.log('server is go');
-});
+app.listen(process.env.PORT, () => {
+    console.log('listening on port 3000');
+  })
