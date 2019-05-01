@@ -10,6 +10,13 @@
         <div class="col-sm-6">
             <div class="center-text">  
                   <h1>My Dreamspace</h1>
+
+                        <div class="dream-buttons">
+                            <form action="/dreams/new" method="GET">
+                                <button class="btn btn-success" type="submit">Add New Dream</button>
+                            </form>
+                        </div>
+
                   <br>
                 <% for (let i = 0; i < user.dreams.length; i++ ) {%>
 
