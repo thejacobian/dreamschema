@@ -71,7 +71,13 @@ router.get('/:id', async (req, res) => {
                 $in: deletedUser.dreams,
             },
         });
-        res.redirect('/users');
+        req.session.destroy((err) => {
+            if (err) {
+              res.send(err);
+            } else {
+              res.redirect('/auth/register');
+            }
+          })
     } catch (err) {
         res.send(err);
     }
