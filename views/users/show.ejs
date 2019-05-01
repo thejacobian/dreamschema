@@ -13,6 +13,11 @@
             <div class="center-text">  
 
                 <h1><%= user.username%>'s Profile</h1>
+
+                <div class="profile-img">
+                <img src="https://source.unsplash.com/random?{face}" class="img-thumbnail" alt="face">
+                </div>
+
                 <div class="dream-buttons">
                     <a href="/users/<%= user._id %>/edit"><button type="submit" class="btn btn-success">Edit Profile</button></a>
                 </div>
@@ -22,21 +27,15 @@
                     </form>
                 </div>
 
-                <% for (let i = 0; i < user.dreams.length; i++ ) {%>
+              
 
-                    <br><div class="date"><%=user.dreams[i].date.toISOString().substr(0, 10);%></div>
-                    
-                    <a class = "dreamtitle" href="/dreams/<%= user.dreams[i]._id %>"><%= user.dreams[i].title %></a><br>
 
-                        <% for (let x = 0; x < user.dreams[i].keywords.length; x++ ) {%>
 
-                           <div class="badge badge-dark"> <%= user.dreams[i].keywords[x].word %></a></div>
 
-                        <% } %>
+
+
 
                 
-                <% } %>
-                </ul>
                 <div>Your Most Used Keywords<br>
                     <ul>
                     <% for (let i = 0; i < keywords.length; i++) {%>
