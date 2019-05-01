@@ -16,7 +16,11 @@ const showMessagesAndUsername = require('./middleware/showSessionMessages');
 const Dream = require('./models/dreams');
 const Keyword = require('./models/keywords');
 const User = require('./models/users');
-
+const MongoDBStore = require('connect-mongodb-session')(session);
+const store = new MongoDBStore({
+    uri: 'mongo://localhost/dream-app',
+    collection: 'mySessions'
+});
 
 app.use(session({
     secret: 'sdflawiefuawi3ur487gbisub3w434',
@@ -30,6 +34,8 @@ app.use(morgan('short'));
 // app.use(requireLogin);
 // app.use(showMessagesAndUsername);
 require('./db/db');
+
+
 
 app.use(express.static('Public'));
 
