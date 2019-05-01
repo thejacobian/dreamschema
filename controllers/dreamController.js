@@ -73,6 +73,7 @@ router.get('/:id', async (req, res) => {
         let thisKeyword;
         for(i=0; i < thisDream.keywords.length; i++){
             thisKeyword = await Keyword.findById(thisDream.keywords[i]);
+            myKeywords.push(thisKeyword);
         };
         const myDbUser = await User.findOne({ dreams: req.params.id });
         if ((myDbUser._id.toString() === thisUsersDbId.toString()) || (thisDream.public === true)) {
@@ -122,31 +123,25 @@ router.post('/', async (req, res) => {
         } else {
             req.body.public = false;
         }
-
         // create new dream
         const newDream = await Dream.create(req.body);
-
         // add drop-down keyword/theme user chose
         newDream.keywords.push(req.body.keywordId);
         // save the dream
         await newDream.save();
-
         // add a few random keywords from req.body into dream.keywords array
         const keywordsInText = await findAllKeywordsInDream(req.body);
-
         if (keywordsInText.length > 0) {
             shuffleArray(keywordsInText); // shuffle keywords in place for random population
             for (let i = 0; i < keywordsInText.length && (i + 1) < maxTextKeywords; i++) {
                 // add keyword if not already present from dropdown
                 if (newDream.keywords.includes(` ${keywordsInText[i]} `) === false) {
                     newDream.keywords.push(keywordsInText[i]);
-                    user.keywords.push(newDream.keywords);
                 }
             }
             // save the dream
             await newDream.save();
         }
-
         if (req.body.keywordId) {
             const keywordCount = await Keyword.findById(req.body.keywordId);
             keywordCount.count++;
