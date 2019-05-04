@@ -15,8 +15,8 @@
                 <h1><%= user.username%>'s Profile</h1>
 
                 <div class="profile-img">
-                <img src="https://source.unsplash.com/random?{face}" class="img-thumbnail" alt="face">
-                </div>
+                <img src="https://source.unsplash.com/random/240x240/?{face}" class="img-thumbnail" alt="face">
+                </div><br/><br/>
 
                 <div class="dream-buttons">
                     <a href="/users/<%= user._id %>/edit"><button type="submit" class="btn btn-success">Edit Profile</button></a>
@@ -27,7 +27,7 @@
                     </form>
                 </div>
                 <hr class="personal-leaderboard">
-                    <div class="personal-leaderboard"><h2>Your Most Recent Themes</h2>
+                    <div class="personal-leaderboard"><h3>Your Most Recent Themes/Keywords</h3>
                         <% for (let i = 0; i < user.dreams.length && i < 3; i++ ) {%>                    
                             <% for (let x = 0; x < user.dreams[i].keywords.length; x++) {%>
                                     <p class="all-caps"><%= user.dreams[i].keywords[x].word %></p>

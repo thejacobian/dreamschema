@@ -11,6 +11,7 @@ const Keyword = require('../models/keywords');
 const maxTextKeywords = 3; // max num keywords to display
 
 // add require login middleware
+const requireLogin = require('../middleware/requireLogin');
 
 // helper function to randomize array from Stack Overflow
 /**
@@ -27,7 +28,7 @@ const shuffleArray = (array) => {
 };
 
 // INDEX ROUTE
-router.get('/', async (req, res) => {
+router.get('/', requireLogin, async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const myDbUser = await User.findById(thisUsersDbId)
@@ -45,7 +46,7 @@ router.get('/', async (req, res) => {
 });
 
 // NEW ROUTE
-router.get('/new', async (req, res) => {
+router.get('/new', requireLogin, async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const allKeywords = await Keyword.find({}).sort('word');
@@ -63,7 +64,7 @@ router.get('/new', async (req, res) => {
 });
 
 // SHOW ROUTE
-router.get('/:id', async (req, res) => {
+router.get('/:id', requireLogin, async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const thisDream = await Dream.findById(req.params.id);
@@ -97,11 +98,14 @@ const findAllKeywordsInDream = async (reqBody) => {
     try {
         const dreamText = reqBody.body.toLocaleLowerCase();
         const dreamTitle = reqBody.title.toLocaleLowerCase();
+        const dropdownKeywordId = reqBody.keywordId;
         const allKeywords = await Keyword.find({});
         const allMatchingKeywords = [];
         allKeywords.forEach((keyword) => {
-            if (dreamText.includes(` ${keyword.word}`) || dreamTitle.includes(` ${keyword.word}`)) {
-                allMatchingKeywords.push(keyword._id);
+            if (keyword._id.toString() !== dropdownKeywordId.toString()) {
+                if (dreamText.includes(` ${keyword.word.toLocaleLowerCase()}`) || dreamTitle.includes(` ${keyword.word.toLocaleLowerCase()}`)) {
+                    allMatchingKeywords.push(keyword._id);
+                }
             }
         });
         console.log(allMatchingKeywords);
@@ -113,7 +117,7 @@ const findAllKeywordsInDream = async (reqBody) => {
 };
 
 // CREATE ROUTE
-router.post('/', async (req, res) => {
+router.post('/', requireLogin, async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         if (req.body.public === 'on') {
@@ -132,10 +136,8 @@ router.post('/', async (req, res) => {
         if (keywordsInText.length > 0) {
             shuffleArray(keywordsInText); // shuffle keywords in place for random population
             for (let i = 0; i < keywordsInText.length && (i + 1) < maxTextKeywords; i++) {
-                // add keyword if it's _id is not already present from dropdown
-                if (!newDream.keywords.includes(keywordsInText[i]._id)) {
-                    newDream.keywords.push(keywordsInText[i]);
-                }
+                // add keywords from text (dropdown keyword) was added earlier
+                newDream.keywords.push(keywordsInText[i]);
             }
             // save the dream
             await newDream.save();
@@ -158,10 +160,9 @@ router.post('/', async (req, res) => {
 });
 
 // EDIT ROUTE
-router.get('/:id/edit', async (req, res) => {
+router.get('/:id/edit', requireLogin, async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
-
         const myDbUser = await User.findById(thisUsersDbId);
         const allKeywords = await Keyword.find({}).sort('word');
         const myDream = await Dream.findById(req.params.id);
@@ -193,7 +194,7 @@ router.get('/:id/edit', async (req, res) => {
 });
 
 // UPDATE ROUTE
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireLogin, async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         if (req.body.public === 'on') {
@@ -219,9 +220,9 @@ router.put('/:id', async (req, res) => {
                 shuffleArray(keywordsInText); // shuffle keywords in place for random population
                 for (let i = 0; i < keywordsInText.length && (i + 1) < maxTextKeywords; i++) {
                     // add keyword if it's _id is not already present from dropdown
-                    if (updatedDream.keywords.includes(keywordsInText[i]._id) === false) {
-                        updatedDream.keywords.push(keywordsInText[i]);
-                    }
+                    // if (updatedDream.keywords.includes(keywordsInText[i]._id.toString()) === false) {
+                    updatedDream.keywords.push(keywordsInText[i]);
+                    // }
                 }
                 // save the dream
                 await updatedDream.save();
@@ -236,7 +237,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE ROUTE
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireLogin, async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const deletedDream = await Dream.findByIdAndDelete(req.params.id);
