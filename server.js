@@ -12,14 +12,13 @@ const authController = require('./controllers/authController');
 const dreamController = require('./controllers/dreamController');
 const userController = require('./controllers/userController');
 const requireLogin = require('./middleware/requireLogin');
-const showMessagesAndUsername = require('./middleware/showSessionMessages');
 const Dream = require('./models/dreams');
 const Keyword = require('./models/keywords');
 const User = require('./models/users');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const store = new MongoDBStore({
     uri: process.env.MONGODB_URI,
-    collection: 'mySessions'
+    collection: 'mySessions',
 });
 
 app.use(session({
@@ -31,11 +30,7 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('short'));
-// app.use(requireLogin);
-// app.use(showMessagesAndUsername);
 require('./db/db');
-
-
 
 app.use(express.static('Public'));
 
@@ -66,21 +61,30 @@ const populateKeywordsFunc = () => {
 };
 
 // SEARCH ROUTE
-app.get('/search', async (req, res) => {
+app.get('/search', requireLogin, async (req, res) => {
     try {
         const thisUsersDbId = req.session.usersDbId;
         const searchTerm = req.query.term.toString().toLocaleLowerCase();
-        const matchingPublicDreams = await Dream.find({
-            $and: [
-                { $text: { $search: searchTerm } },
-                { public: true }],
-        }).populate('keywords').sort('title');
+        let matchingPublicDreams;
+        let matchingPrivateDreams;
+        if (searchTerm !== '') {
+            matchingPublicDreams = await Dream.find({
+                $and: [
+                    { $text: { $search: searchTerm } },
+                    { public: true }],
+            }).populate('keywords').sort('title');
 
-        const matchingPrivateDreams = await Dream.find({
-            $and: [
-                { $text: { $search: searchTerm } },
-                { public: false }],
-        }).populate('keywords').sort('title');
+            matchingPrivateDreams = await Dream.find({
+                $and: [
+                    { $text: { $search: searchTerm } },
+                    { public: false }],
+            }).populate('keywords').sort('title');
+        } else {
+            matchingPublicDreams = await Dream.find({ public: true })
+                .populate('keywords').sort('title');
+            matchingPrivateDreams = await Dream.find({ public: false })
+                .populate('keywords').sort('title');
+        }
 
         const myDbUser = await User.findById(thisUsersDbId)
             .populate('dreams');
@@ -129,9 +133,11 @@ app.get('/', async (req, res) => {
 
         const thisUsersDbId = req.session.usersDbId;
         const keywords = await Keyword.find({});
+        const message = '';
         res.render('auth/login.ejs', {
             currentUser: thisUsersDbId,
             keywords,
+            message,
         });
     } catch (err) {
         res.send(err);

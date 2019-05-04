@@ -37,7 +37,6 @@ h2 {
     padding-bottom: 10px;
 }
 
-
 h3 {
     font-family: 'Shrikhand', cursive;
     margin: 25px auto 10px auto;
@@ -56,6 +55,10 @@ h5 {
 
 p {
     font-size: 20px;
+}
+
+p strong {
+    color: rgb(255, 120, 214);
 }
 
 .all-caps {
@@ -92,9 +95,13 @@ a {
 
 a:hover {
     font-family: 'Roboto', sans-serif;
-    color: rgb(61, 143, 64);
+    color: rgb(61, 143, 64) !important;
     text-decoration: none;
 }
+
+/* .bg-light {
+    background-color: rgb(107, 117, 126) !important;
+} */
 
 .navbar-brand {
     text-transform: uppercase;
@@ -102,8 +109,13 @@ a:hover {
     letter-spacing: 5px;
 }
 
+.navbar-brand:hover {
+    color: black !important;
+}
+
 .nav-link {
     font-size: 15px;
+    color: black !important;
 }
 
 .center-text {
@@ -139,18 +151,18 @@ a:hover {
 
 .card-img-top {
     width: 100%;
-    height: 20vw;
+    height: 30vw;
     object-fit: cover;
 }
 
 .img-thumbnail {
-    width: 100%;
-    height: 40vw;
+    max-width: 240px;
+    height: 240px;
     object-fit: cover;
 }
 
 .profile-img {
-    width: 30%;
+    max-width: 30%;
     display: inline;
 }
 
